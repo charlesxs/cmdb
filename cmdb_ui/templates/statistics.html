@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="/static/css/statistics.css" />
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="stat-border">
+            <h4 class="gray-font font-indent">用户总数</h4>
+            <div class="stat-content gray-font font-indent" id="userNumber">{{ userNumber }}</div>
+            <div class="gray-font font-indent small-font">All User</div>
+        </div>
+
+
+        <div class="stat-border">
+            <h4 class="gray-font font-indent">主机总数</h4>
+            <div class="stat-content gray-font font-indent" id="hostNumber">{{ hostNumber }}</div>
+            <div class="gray-font font-indent small-font">All Host</div>
+        </div>
+
+        <div class="stat-border">
+            <h4 class="gray-font font-indent">用户组总数</h4>
+            <div class="stat-content gray-font font-indent" id="usergroupNumber">{{ usergroupNumber }}</div>
+            <div class="gray-font font-indent small-font">All UserGroup</div>
+        </div>
+
+        <div class="stat-border">
+            <h4 class="gray-font font-indent">主机组总数</h4>
+            <div class="stat-content gray-font font-indent" id="hostgroupNumber">{{ hostgroupNumber }}</div>
+            <div class="gray-font font-indent small-font">All HostGroup</div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="container" style="height:400px; margin-left:4%; margin-right:13%; margin-top:30px;"></div>
+
+{% endblock %}
+
+
+{% block JavaScripts %}
+        <script>
+        $(function () {
+            $('#container').highcharts({
+                chart: {
+                    type: 'column',
+                    margin: [ 50, 50, 100, 80]
+                },
+                title: {
+                    text: '统计数据'
+                },
+                xAxis: {
+                    categories: [
+                        '用户总数',
+                        '用户组总数',
+                        '主机总数',
+                        '主机组总数',
+                    ],
+                    labels: {
+                        rotation: -45,
+                        align: 'right',
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '单位 / 个数'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    pointFormat: '个数统计: <b>{point.y:.1f} 个</b>',
+                },
+                series: [{
+                    name: 'Population',
+                    data: [parseInt($('#userNumber').html()),
+                           parseInt($('#usergroupNumber').html()),
+                           parseInt($('#hostNumber').html()),
+                           parseInt($('#hostgroupNumber').html())
+                           ],
+                    dataLabels: {
+                        enabled: true,
+                        rotation: -90,
+                        color: '#FFFFFF',
+                        align: 'right',
+                        x: 4,
+                        y: 10,
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif',
+                            textShadow: '0 0 3px black'
+                        }
+                    }
+                }]
+            });
+        });
+    </script>
+{% endblock %}

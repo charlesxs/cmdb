@@ -1,0 +1,159 @@
+#menu{
+    position: fixed;
+
+    width: 200px;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    background-color: black;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.icon{
+    float: left;
+
+    margin-top: 11px;
+    margin-left: 20px;
+
+}
+
+.custom-title {
+    float: left;
+
+    color: white;
+    font-size: 17px;
+
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-right: 0;
+
+    cursor: pointer;
+}
+
+#UserInfo{
+    position: absolute;
+    margin-left: 40px;
+    margin-top: 10px;
+
+    width: 150px;
+    height: 125px;
+
+    background-color: #FFFFFF;
+}
+
+
+#UserInfo
+.info-layout{
+    cursor: pointer;
+    display: block;
+    color: dimgray;
+    text-indent: 20px;
+    font-weight: 600;
+    font-size: 15px;
+    height: 25px;
+    padding-top: 10px;
+}
+
+a.info-layout:hover{
+    background-color: #E9EBED;
+}
+
+#menu div, #menu a {
+    color: white;
+}
+
+#menu a:hover{
+    font-weight: 600;
+}
+
+a{
+    text-decoration: none;
+}
+
+
+#dashboard{
+    margin-top: 30px;
+    height: 50px;
+    /*background-color: #1F1F1F;*/
+
+}
+
+#dashboard
+.dafont{
+    padding-top: 14px;
+}
+
+
+.GroupSpace{
+    margin-top: 20px;
+    /*background-color: #00A4BD;*/
+
+}
+
+.parentMenu{
+    height: 30px;
+    cursor: pointer;
+    /*background-color: gray;*/
+}
+
+.font-icon{
+    margin-left: 30px;
+}
+
+.coarse-font{
+    font-weight: 600;
+    font-size: 14px;
+
+    margin-left: 5px;
+}
+
+ul.submenu{
+    margin-top: 0;
+    /*margin-bottom: 10px;*/
+    /*opacity: 0.8;*/
+}
+
+.bgcolor {
+    background-color: #1F1F1F;
+}
+
+.active{}
+
+
+ul.submenu
+li{
+    list-style: none;
+    font-size: 13px;
+    margin-left: 20px;
+
+}
+
+.hide {
+    display: none;
+}
+
+
+
+#navigation{
+    margin-top: 30px;
+    height: 60px;
+    background-color: white;
+
+    border-top: 1px #DCDDCC solid;
+    border-bottom: 1px #DCDDCC solid;
+}
+
+#navigation
+.nav-content {
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}

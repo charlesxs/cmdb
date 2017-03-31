@@ -1,0 +1,30 @@
+.stat-border{
+    float: left;
+
+    margin-top: 30px;
+    margin-left: 4%;
+
+    height: 124px;
+    width: 200px;
+
+    border: 1px #DCDDCC solid;
+    border-top: 5px #DCDDCC solid;
+    background-color: white;
+}
+
+.stat-content{
+    font-size: 26px;
+    font-weight: 600;
+    padding-top: 10px;
+    /*background-color: #DDDDDD;*/
+
+    border-top: 1px solid;
+}
+
+.font-indent{
+    text-indent: 20px;
+}
+
+.small-font{
+    font-size: 13px;
+}

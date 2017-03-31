@@ -1,0 +1,26 @@
+.box{
+    margin-left: 3%;
+    margin-right: 5%;
+    margin-top: 30px;
+    height: 1400px;
+    background-color: white;
+}
+
+.prompt{
+    background-color: #1A8AB3;
+    padding-top: 30px;
+    padding-left: 50px;
+
+    font-weight: 600;
+}
+
+.hostinfo{
+    margin-top: 30px;
+    margin-left: 150px;
+}
+
+
+form input {
+    height: 25px;
+    width: 400px;
+}

@@ -1,0 +1,223 @@
+.content{
+    margin-top: 5%;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-bottom: 7%;
+    /*height: 800px;*/
+
+    background-color: white;
+}
+
+.content-header {
+    height: 50px;
+    background-color: #FFFFFF;
+    border-bottom: 1px #DBDBDB solid;
+
+    border-top: 3px #DBDBDB solid;
+}
+
+
+.content-op{
+    position: relative;
+    height: 40px;
+    background-color: #FFFFFF;
+    margin-bottom: 10px;
+}
+
+.search{
+    float: right;
+    margin-right: 2%;
+    margin-top: 11px;
+    background-color: lightseagreen;
+    border: 1px #e3f4d5 solid;
+
+    width: 294px;
+}
+
+.mouse-color{
+    background-color: #2c8c9d;
+}
+
+#search-input{
+    width: 225px;
+    height: 28px;
+    border: 0;
+    padding: 1px;
+    padding-left: 8px;
+
+}
+
+.prompt-font{
+    color: #B3B3B3;
+}
+
+.search-font{
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+.add-host{
+    position: absolute;
+    color: white;
+    font-size: 13px;
+    /*font-weight: 600;*/
+
+    background-color: #1ab394;
+    margin-left: 20px;
+    margin-top: 10px;
+
+    width: 78px;
+    height: 25px;
+
+    text-align: center;
+    line-height: 25px;
+}
+
+.delete-selected{
+    position: absolute;
+    color: white;
+    font-size: 13px;
+    /*font-weight: 600;*/
+
+    background-color: #ed5565;
+    margin-left: 121px;
+    margin-top: 10px;
+
+    width: 78px;
+    height: 25px;
+
+    text-align: center;
+    line-height: 25px;
+}
+
+.table-page{
+    margin-left: 20px;
+    margin-right: 2%;
+    height: 530px;
+}
+
+.table-style{
+    /*broder: 1px #EBEBEB solid;*/
+    /*broder: 1px solid;*/
+    width: 100%;
+}
+
+table{
+    border-left:1px solid #EBEBEB;
+    border-top:1px solid #EBEBEB;
+}
+td, th{
+    border-right:1px solid #EBEBEB;
+    border-bottom:1px solid #EBEBEB;
+    font-size: 13px;
+}
+
+td a {
+    color: white;
+}
+
+table,th,td{
+    text-align: center;
+    cursor: auto;
+}
+
+tr.treventcolor{
+    background-color: #f9f9f9;
+}
+
+tr.troddcolor{
+    background-color: white;
+}
+
+tr.movecolor{
+    background-color: #F4F4F4;
+}
+
+.add-operator{
+    float: left;
+    background-color: #1ab394;
+
+    width: 35px;
+    height: 20px;
+    margin-left: 10px;
+    /*padding-top: 1px;*/
+
+}
+
+.info-operator{
+    float: left;
+    background-color: #1A8AB3;
+
+    width: 35px;
+    height: 20px;
+    margin-left: 10px;
+}
+
+.delete-operator{
+    float: left;
+    background-color: #ed5565;
+    width: 35px;
+    height: 20px;
+    margin-left: 10px;
+}
+
+.font-control {
+    font-size: 12px;
+    color: white;
+    text-align: center;
+    padding-top: 2px;
+    font-weight: 600;
+}
+
+
+
+.page-border{
+    height: 30px;
+}
+
+.page-button{
+    float: right;
+    background-color: white;
+    line-height: 3px;
+
+    height: 15px;
+    margin-top: 10px;
+
+    padding-top: 10px;
+    line-height: 5px;
+    text-align: center;
+    color: gray;
+    font-size: 13px;
+}
+
+.page-button-border{
+    border: 1px #ddd solid;
+}
+
+.page-button-num-border{
+    border-top: 1px #ddd solid;
+    border-bottom: 1px #ddd solid;
+    border-right: 1px #ddd solid;
+}
+
+.page-button-width{
+    width: 60px;
+}
+
+.page-button-num{
+    width: 25px;
+}
+
+.page-box-fl{
+    width: 35px;
+}
+
+.page-color{
+    background-color: #D1D1D1;
+}
+
+.current-page-color{
+    background-color: #D1D1D1;
+}

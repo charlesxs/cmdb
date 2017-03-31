@@ -4,8 +4,8 @@
 from rest_framework import serializers
 from rest_framework.fields import empty
 from django.db import transaction
-from .models import (Asset, Server, NetworkDevice, AssetGroup,
-                     AssetType, User, UserGroup, Auth, IDC)
+from cmdb.models import (Asset, Server, NetworkDevice, AssetGroup,
+                         AssetType, User, UserGroup, Auth, IDC)
 
 
 class DynamicModelSerializer(serializers.ModelSerializer):

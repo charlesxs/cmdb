@@ -2,7 +2,7 @@
 #
 from hashlib import sha256
 from django.db import models
-from .models import Asset
+from cmdb.models import Asset
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 
 

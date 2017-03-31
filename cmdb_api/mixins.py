@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .utils import get_models_field_name, fetch_related_field
 from .serializers import ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer
-from .models import Asset
+from cmdb.models import Asset
 
 
 class IdNameConvertMixin:

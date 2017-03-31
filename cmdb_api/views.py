@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import detail_route, list_route
 from rest_framework import mixins, generics
 from rest_framework import status
-from .models import Asset, Server, NetworkDevice, AssetGroup, AssetType, UserGroup, IDC, User
+from cmdb.models import Asset, AssetGroup, AssetType, UserGroup, IDC, User
 from .mixins import IdNameConvertMixin, AssetListMixin
 from .utils import encrypt_pwd
 from .serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,

@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% load my_tags %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="/static/css/list.css" />
+{% endblock %}
+
+{% block content %}
+    <!-- 当前页展示 -->
+   <div class="content">
+        <div class="content-header">
+            <h3 style="text-indent: 20px;">查看用户</h3>
+        </div>
+
+        <div class="content-op">
+            <a href="#">
+                <div class="add-host">添加用户</div>
+            </a>
+
+            <a href="#">
+                <div class="delete-selected">删除所选</div>
+            </a>
+
+            <div class="search">
+                <input id="search-input" placeholder="user name" type="text" />
+                <span class="search-font">Search</span>
+            </div>
+        </div>
+
+        <div class="table-page">
+            <table  cellspacing="0" cellpadding="10" class="table-style" >
+                <thead>
+                <tr class="head">
+                    <th width="15px;"><input type="checkbox" name="checkall" id="checkall" onclick="checkAll(this);"/></th>
+                    <th>用户名</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>角色</th>
+                    <th>所属组</th>
+                    <th>启用</th>
+                    <th width="145px">操作</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td ><input type="checkbox" name="infoList" value="{{ user.id }}"/></td>
+                        <td >{{ user.username }}</td>
+                        <td >{{ user.realname }}</td>
+                        <td >{{ user.email }}</td>
+                        <td >{{ user.role.rolename }}</td>
+                        <td >{% getUserInfo user.username 'usergroup' %}</td>
+                        {% for k,v in user.ECHOICES %}
+                            {% if k == user.enabled %}
+                                <td >{{ v }}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <div class="info-operator"><div class="font-control"><a href="#">详情</a></div></div>
+                            <div class="add-operator"><div class="font-control"><a href="#">编辑</a></div></div>
+                            <div class="delete-operator"><div class="font-control"><a href="#">删除</a></div></div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+        <!-- 分页 -->
+            <div class="page-border">
+                {{ pages_html }}
+{#                <a href="#" ><div class="page-button page-button-width">后一页</div></a>#}
+{#                <a href="#"><div class="page-button-num page-button">2</div></a>#}
+{#                <a href="#"><div class="page-button page-button-width">前一页</div></a>#}
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block JavaScripts %}
+    <script type="text/javascript">
+        (function($){
+            //展开菜单
+            $('.parentMenu span').each(function () {
+                if ($(this).html() == '用户管理') {
+                    $(this).parent().addClass('bgcolor active');
+                    $(this).parent().siblings('.submenu').removeClass('hide');
+                }
+            });
+        })(jQuery);
+    </script>
+    <script type="text/javascript" src="/static/js/list.js"></script>
+{% endblock %}

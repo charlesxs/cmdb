@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}"/>
+</head>
+
+<body>
+
+<!-- 总外边框，绝对于body居中对齐; absolute 属性如果父 div不配合 relative使用, 那么永远针对
+    body 进行绝对定位.
+-->
+<div id="main-window">
+    <!-- logo -->
+    <div id="logo">
+        <img src="../static/images/login-logo.jpg">
+    </div>
+
+    <!-- 欢迎语 -->
+    <div class="welcome-font">
+        Welcome to login
+        <div class="user_pwd_error hide" id="uError">
+            <div class="font-prompt"> *用户名或密码错误</div>
+        </div>
+    </div>
+
+    <!-- form表单 -->
+    <form action="{% url 'cmdb:login' %}" method="POST" id="form1">
+        <div class="plus">
+            <input class="plus-input" type="text" name="username" value="{{ user }}"/>
+            <div class="error-prompt hide">*用户名不能为空</div>
+        </div>
+
+        <div class="plus">
+            <input class="plus-input" type="password" name="password"/>
+            <div class="error-prompt hide">*密码不能为空</div>
+        </div>
+
+        <div class="plus">
+            <input class="login-button" type="button" value="登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录"/>
+            <div class="error-prompt hide">*用户名或密码错误</div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="{% static 'js/jquery-2.2.3.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/login.js' %}"></script>
+
+</body>
+</html>
