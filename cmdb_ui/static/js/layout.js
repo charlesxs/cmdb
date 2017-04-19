@@ -2,72 +2,88 @@
  * Created by Administrator on 2016/5/19.
  */
 
+
+var PageRecoder = {
+    setActiveMenu: function (v) {
+        localStorage.setItem('activePage', v);
+    },
+    getActiveMenu: function () {
+        var text = localStorage.getItem('activePage');
+        var that = null;
+
+        $('.parentMenu').each(function () {
+            if ($(this).text().trim() === text) {
+                that = $(this);
+                return false;
+            }
+        });
+        return that;
+    }
+};
+
+
+// 自动展开 active 菜单
+(function () {
+    var activeMenu = PageRecoder.getActiveMenu();
+    if (activeMenu) {
+        activeMenu.siblings('.submenu').removeClass('hide');
+        activeMenu.attr('active', 'active').removeAttr('display');
+    }
+})();
+
+
 $(function() {
-    $('.parentMenu').click(function() {
-        var curClass = $(this).siblings('.submenu').attr('class');
-        // console.log(curClass);
-        // console.log($(this).parent().siblings('.menuIdentity'));
+    // 菜单的展示和隐藏
+    $('.hide').hide().removeClass('hide');
+    $('.parentMenu').on('click', function() {
+        var parentmenu = $(this);
+        var submenu = parentmenu.siblings('.submenu');
+        var activemenu = $('.parentMenu[active="active"]');
+        var navbar = $('#navbar');
+        var speed = 'fast';
 
-        if (curClass.indexOf('hide') < 0) {
-            var curElement = $(this);
-            //点击事件发生后如果子菜单是展开的就隐藏, 并且移除父元素的 bgcolor 样式.
-            $(this).siblings('.submenu').slideUp('fast', function () {
-                curElement.removeClass('bgcolor active');
-                $(this).addClass('hide').removeAttr('style');
-            });
+        submenu.slideToggle(speed, function () {
+            if (parentmenu.attr('active')) {
+                parentmenu.removeAttr('active');
 
-        } else {
-            // 点击事件发生后如果子菜单是隐藏的就展开, 同时找到其他菜单项并隐藏其子菜单.
-            $(this).siblings('.submenu').slideDown('fast').removeClass('hide');
-            $(this).addClass('bgcolor active');
+                PageRecoder.setActiveMenu(null);
+            } else {
+                parentmenu.attr('active', 'active');
 
+                PageRecoder.setActiveMenu(
+                    parentmenu.text().trim()
+                );
+            }
+        });
 
-            $(this).parent().siblings('.GroupSpace').each(function(){
-                // $(this).children('.submenu').addClass('hide');
-                // $(this).children('.parentMenu').removeClass('bgcolor');
-
-                $(this).children('.submenu').slideUp('fast', function () {
-                    $(this).siblings('.parentMenu').removeClass('bgcolor active');
-                    $(this).addClass('hide').removeAttr('style');
-                });
-            })
-        }
-
-    }).mouseover(function () {
-        var curClass = $(this).siblings('.submenu').attr('class');
-
-        if (curClass.indexOf('hide') >= 0) {
-            $(this).addClass('bgcolor');
-        }
-
-    }).mouseout(function () {
-        var curClass = $(this).siblings('.submenu').attr('class');
-
-        if (curClass.indexOf('hide') >= 0) {
-            $(this).removeClass('bgcolor');
-
+        //检查其他菜单，如果有是active的，就关闭菜单.
+        if (!parentmenu.is(activemenu)) {
+            activemenu.siblings('.submenu').slideUp(speed);
+            activemenu.removeAttr('active');
         }
     });
 
     //个人信息隐藏和展示
-    $('#viewUserInfo').click(function () {
-        var curClass = $('#UserInfo').attr('class');
-        if (curClass.indexOf('hide') < 0) {
-            $('#UserInfo').removeAttr('style').addClass('hide');
+    $('#viewUserInfo').on('click', function () {
+        var user = $('#UserInfo');
+        if (user.hasClass('hide')) {
+            user.fadeIn('slow').removeClass('hide');
         } else {
-            $('#UserInfo').fadeIn('slow').removeClass('hide');
+            user.fadeOut('slow', function () {
+                user.addClass('hide');
+            });
         }
     });
 
     //鼠标指针离开个人信息时就隐藏它
-    $('#UserInfo').mouseleave(function () {
-        $(this).fadeOut('fast', function () {
+    $('#UserInfo').on('mouseleave', function () {
+        $(this).fadeOut('slow', function () {
             $(this).removeAttr('style').addClass('hide');
         });
     });
 
-
 });
+
 
 
 

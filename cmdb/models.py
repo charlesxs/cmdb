@@ -7,7 +7,7 @@ class AssetGroup(models.Model):
     comment = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.agname
+        return self.groupname
 
 
 class UserGroup(models.Model):

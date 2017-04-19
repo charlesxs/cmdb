@@ -4,13 +4,13 @@
 
 //动态显示登录框
 function visit_login(){
-    if (current != end){
+    if (current !== end){
         current += 1;
         $('#main-window').css('margin-top', current.toString() + 'px');
     } else {
         clearInterval(sobj);
     }
-};
+}
 
 (function () {
     // 淡入
@@ -23,36 +23,47 @@ function visit_login(){
 })();
 
 
+
 //DOM加载完后开始注册事件
-$(function() {
-    $('input[name="username"]').blur(show_error).focus(hide_error);
+$(function($) {
+    var user = $('input[name="username"]');
+    var password = $('input[name="password"]');
 
-    $('input[name="password"]').blur(show_error).focus(hide_error);
 
-    $('input[name="password"]').keydown(function(event) {
+    user.blur(show_error).focus(hide_error);
+    password.blur(show_error).focus(hide_error);
+
+    password.keydown(function(event) {
         if (event.keyCode == 13) {
             if (show_error(event, $(this))) {
-                Ajax_post();
+                Ajax_post(user, password);
             }
         } else {
             hide_error(event, $(this));
         }
     });
 
-    $('.login-button').click(Ajax_post);
+    $('.login-button').click(function () {
+        Ajax_post(user, password);
+    });
 });
 
 
 //事件函数: 检测用户名或密码为空时, 显示错误提示
 function show_error() {
-    if (!arguments[1]) {
+    if (! arguments[1]) {
         var obj = $(this);
     } else {
         var obj = arguments[1];
     }
 
-    if (obj.val().trim() == "") {
-        obj.siblings(".error-prompt").removeClass('hide');
+    if (!obj.val().trim()) {
+        var ue = obj.siblings('#uError');
+        if (!ue.hasClass('hide')){
+            ue.addClass('hide');
+        }
+
+        obj.siblings(".none-error").removeClass('hide');
         return false;
     }
     return true;
@@ -66,43 +77,35 @@ function hide_error() {
         var obj = arguments[1];
     }
 
-    obj.siblings(".error-prompt").addClass("hide");
+    obj.siblings(".none-error").addClass("hide");
 }
 
 //使用Ajax请求服务器来代替submit 整个页面提交.
-function Ajax_post() {
-        var user = $('input[name="username"]').val();
-        var pwd = $('input[name="password"]').val();
+function Ajax_post(user, password) {
+    // debugger;
+    var username = user.val().trim();
+    var pwd = password.val().trim();
+    var e = $('#uError');
+    //使用Ajax验证用户名和密码如果用户名和密码都正确则跳转到相对应页面, 否则提示错误.
+    if (username && pwd) {
+        $.post('/login/', {username: username, password: pwd}, function (data) {
+            // var data = $.parseJSON(data);
 
-        //使用Ajax验证用户名和密码如果用户名和密码都正确则跳转到相对应页面, 否则提示错误.
-        if (user != "" && pwd != "") {
-            $.post('/mytest/login/', {username: user, password: pwd}, function (data) {
-                var data = jQuery.parseJSON(data);
-
-                switch (data.status) {
-                    case "200":
-                        window.location.href = data.url;
-                        break;
-                    case "404":
-                        $('#uError').removeClass('hide');
-                        $('input[name="password"]').val("");
-
-                        $('#uError').fadeOut(3000, function() {
-                            $(this).addClass('hide');
-                            $(this).removeAttr('style');
-                        });
-                        break;
-                    default:
-                        $('#uError').children('.font-prompt').html('*服务器偷懒中...');
-                        $('#uError').removeClass('hide');
-                        $('input[name="password"]').val("");
-
-                        $('#uError').fadeOut(7000, function() {
-                            $(this).addClass('hide');
-                            $(this).removeAttr('style');
-                        });
-                        break;
-                }
+            switch (data.status) {
+                case 200:
+                    location.href = data.url;
+                    break;
+                case 404:
+                    e.text("* 没有此用户");
+                    e.removeClass('hide');
+                    password.val("");
+                    break;
+                default:
+                    e.text('* 密码输入错误');
+                    e.removeClass('hide');
+                    password.val("");
+                    break;
+            }
         });
     }
 }
@@ -121,3 +124,4 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+

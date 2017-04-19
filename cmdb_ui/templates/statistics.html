@@ -1,39 +1,50 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block link-css %}
-    <link rel="stylesheet" href="/static/css/statistics.css" />
+    <link rel="stylesheet" href="{% static 'css/statistics.css' %}" />
 {% endblock %}
 
 {% block content %}
-    <div>
-        <div class="stat-border">
-            <h4 class="gray-font font-indent">用户总数</h4>
-            <div class="stat-content gray-font font-indent" id="userNumber">{{ userNumber }}</div>
-            <div class="gray-font font-indent small-font">All User</div>
+    <div id="statistic" class="row">
+        <div class="col-md-3">
+            <div class="stat-border">
+                <h4 class="gray-font font-indent">用户总数</h4>
+                <div class="stat-content gray-font font-indent" id="usernumber">{{ user_number }}</div>
+                <div class="gray-font font-indent small-font">All Users</div>
+            </div>
         </div>
 
-
-        <div class="stat-border">
-            <h4 class="gray-font font-indent">主机总数</h4>
-            <div class="stat-content gray-font font-indent" id="hostNumber">{{ hostNumber }}</div>
-            <div class="gray-font font-indent small-font">All Host</div>
+        <div class="col-md-3">
+            <div class="stat-border">
+                <h4 class="gray-font font-indent">资产总数</h4>
+                <div class="stat-content gray-font font-indent" id="assets_number">{{ assets_number }}</div>
+                <div class="gray-font font-indent small-font">All Hosts</div>
+            </div>
         </div>
 
-        <div class="stat-border">
-            <h4 class="gray-font font-indent">用户组总数</h4>
-            <div class="stat-content gray-font font-indent" id="usergroupNumber">{{ usergroupNumber }}</div>
-            <div class="gray-font font-indent small-font">All UserGroup</div>
+        <div class="col-md-3">
+            <div class="stat-border">
+                <h4 class="gray-font font-indent">虚拟机总数</h4>
+                <div class="stat-content gray-font font-indent" id="vhostsnumber">{{ vhosts_number }}</div>
+                <div class="gray-font font-indent small-font">All Virtual Hosts</div>
+            </div>
         </div>
 
-        <div class="stat-border">
-            <h4 class="gray-font font-indent">主机组总数</h4>
-            <div class="stat-content gray-font font-indent" id="hostgroupNumber">{{ hostgroupNumber }}</div>
-            <div class="gray-font font-indent small-font">All HostGroup</div>
+        <div class="col-md-3">
+            <div class="stat-border">
+                <h4 class="gray-font font-indent">物理机总数</h4>
+                <div class="stat-content gray-font font-indent" id="phostsnumber">{{ phosts_number }}</div>
+                <div class="gray-font font-indent small-font">All Physical Hosts</div>
+            </div>
         </div>
-        <div class="clearfix"></div>
+        <div class="hide" id="usergroupnumber">{{ usergroup_number }}</div>
+        <div class="hide" id="hostgroupnumber">{{ hostgroup_number }}</div>
+        <div class="hide" id="idcnumber">{{ idc_number }}</div>
+
+{#        <div id="container" style="height:400px; margin-left:44%; margin-right:6%; margin-top:30px;"></div>#}
+        <div id="container" style="height:400px; margin-top: 30px;" class="col-md-12"></div>
     </div>
-
-    <div id="container" style="height:400px; margin-left:4%; margin-right:13%; margin-top:30px;"></div>
 
 {% endblock %}
 
@@ -53,8 +64,11 @@
                     categories: [
                         '用户总数',
                         '用户组总数',
-                        '主机总数',
-                        '主机组总数',
+                        '资产总数',
+                        '资产组总数',
+                        '虚拟机总数',
+                        '物理机总数',
+                        'IDC数量'
                     ],
                     labels: {
                         rotation: -45,
@@ -75,14 +89,17 @@
                     enabled: false
                 },
                 tooltip: {
-                    pointFormat: '个数统计: <b>{point.y:.1f} 个</b>',
+                    pointFormat: '个数统计: <b>{point.y:.1f} 个</b>'
                 },
                 series: [{
                     name: 'Population',
-                    data: [parseInt($('#userNumber').html()),
-                           parseInt($('#usergroupNumber').html()),
-                           parseInt($('#hostNumber').html()),
-                           parseInt($('#hostgroupNumber').html())
+                    data: [parseInt($('#usernumber').text()),
+                           parseInt($('#usergroupnumber').text()),
+                           parseInt($('#assets_number').text()),
+                           parseInt($('#hostgroupnumber').text()),
+                           parseInt($('#vhostsnumber').text()),
+                           parseInt($('#phostsnumber').text()),
+                           parseInt($('#idcnumber').text())
                            ],
                     dataLabels: {
                         enabled: true,

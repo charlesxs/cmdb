@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': 'cmdb',
         'USER': 'cmdb',
         'PASSWORD': 'cmdb',
-        'HOST': '172.16.8.251',
+        'HOST': '127.0.0.1',
         'PORT': '3306'
     }
 }

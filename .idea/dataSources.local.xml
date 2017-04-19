@@ -9,7 +9,9 @@
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
       <user-name>cmdb</user-name>
+      <introspection-schemas>*:cmdb</introspection-schemas>
       <resolve-scope>cmdb:</resolve-scope>
+      <unqualified-resolve-schemas>cmdb:</unqualified-resolve-schemas>
     </data-source>
   </component>
 </project>

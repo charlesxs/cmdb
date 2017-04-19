@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% load my_tags %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+    <li>资产管理</li>
+    <li class="active">查看资产</li>
+{% endblock %}
+
+{% block content %}
+    <!-- 当前页展示 -->
+    <div class="content">
+        <div class=" content-header">
+            <h3 style="text-indent: 20px;">查看资产</h3>
+        </div>
+
+        <div class="content-op">
+            <a href="#" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
+            <a href="#" class="btn btn-danger btn-sm btn-asset-position">删除所选</a>
+
+            <div class="search">
+                <div class="input-group search-width">
+                    <input id="search-input" type="text" class="form-control" placeholder="ip or hostname">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="button">Search</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-page table-responsive">
+            <table class="table table-bordered" style="margin-bottom: -8px;">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            <input id="checkall" type="checkbox" name="checkall" value="checkall" >
+                        </th>
+                        <th>资产编号</th>
+                        <th>资产类型</th>
+                        <th>主机名</th>
+                        <th>内网IP</th>
+                        <th>所属组</th>
+                        <th>注释</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for asset in assets %}
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" name="assetid" value="{{ asset.id }}">
+                        </td>
+                        <td>{{ asset.serialnum }}</td>
+                        <td>{{ asset.asset_type }}</td>
+                        {% if asset.asset_type.name == '路由器' or asset.asset_type.name == '交换机' %}
+                        <td>{{ asset.networkdevice.name }}</td>
+                        <td></td>
+                        <td>{{ asset | fetch_groups_name | join:" " }}</td>
+                        <td>{{ asset.networkdevice.comment }}</td>
+                        {% else %}
+                        <td>{{ asset.server.hostname }}</td>
+                        <td>{{ asset.server.lan_ip }}</td>
+                        <td>{{ asset | fetch_groups_name | join:" " }}</td>
+                        <td>{{ asset.server.comment }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="#" class="btn btn-xs btn-info">编辑</a>
+                            <button class="btn btn-xs btn-danger">删除</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <nav aria-label="Page navigation" style="float: right;">
+                <ul class="pagination">
+{#                    <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>#}
+{#                    <li><a href="{% url 'cmdb_ui:asset_list' page_num=1 %}">1</a></li>#}
+                    {{ page_html }}
+{#                    <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>#}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/list.js' %}"></script>
+{% endblock %}
+
+

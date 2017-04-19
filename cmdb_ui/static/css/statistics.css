@@ -1,14 +1,20 @@
-.stat-border{
-    float: left;
-
+#statistic{
     margin-top: 30px;
-    margin-left: 4%;
+    margin-left: 2%;
+    margin-right: 4%;
+}
+
+.stat-border{
+    /*float: left;*/
+
+    /*margin-top: 30px;*/
+    /*margin-left: 4%;*/
 
     height: 124px;
-    width: 200px;
+    /*width: 200px;*/
 
-    border: 1px #DCDDCC solid;
-    border-top: 5px #DCDDCC solid;
+    border: 1px #e7eaf3 solid;
+    border-top: 5px #e7eaf3 solid;
     background-color: white;
 }
 

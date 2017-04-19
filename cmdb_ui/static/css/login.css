@@ -3,84 +3,35 @@ body{
 }
 
 #main-window{
-    position: absolute;
+    /*position: absolute;*/
 
-    /*margin:auto;*/
     margin-top: 3%;
-    margin-left: 35%;
-
-    /*top: 0;*/
-    /*left: 0;*/
-    /*bottom:0;*/
-    /*right: 0;*/
+    /*margin-left: 34%;*/
 
     height: 446px;
     width: 451px;
     display: none;
-
-    /*background-color: #AFAFAF;*/
 }
 
-#main-window
-#logo{
+#main-window #logo{
     height: 149px;
-    /*position: absolute;*/
-    /*top: 14%;*/
-    /*left: 25%;*/
-
-    margin-top: 14%;
-    margin-left: 16%;
+    margin-top: 16%;
 }
 
-
-/*.font-middle{*/
-    /*text-align: center;*/
-/*}*/
 
 .welcome-font{
-    margin-top: 6%;
+    margin-top: 3%;
 
-    height: 73px;
+    height: 60px;
     color: #69B3CA;
-    font-size: 35px;
+    font-size: 30px;
 }
 
-.plus{
-    height: 48px;
-}
-
-.plus-input {
-    height: 30px;
-    width: 285px;
-
-    /*padding-top:3px;*/
-    padding-left: 14px;
-
-    border: 0;
-    background-color: #FFE89A;
-}
-
-.login-button{
-    height: 30px;
-    width: 300px;
-
-    cursor: pointer;
-
-    border: 0;
-    color: white;
-    font-size: 18px;
-    background-color: #07A6BD;
-}
 
 .error-prompt{
     font-size: 13px;
-    color: white;
+    color: red;
     width: 112px;
-    background-color: orangered;
-
-    float: right;
-    margin-right: 31px;
-    margin-top: 8px;
 
 }
 .hide {

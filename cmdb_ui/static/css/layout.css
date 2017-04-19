@@ -1,3 +1,10 @@
+.warp {
+    position: relative;
+    /*height: auto;*/
+    min-height: 100%;
+    padding-bottom: 60px;
+}
+
 #menu{
     position: fixed;
 
@@ -5,15 +12,6 @@
     top: 0;
     bottom: 0;
     z-index: 1;
-    background-color: black;
-}
-
-.clearfix:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
 }
 
 .icon{
@@ -39,31 +37,29 @@
 
 #UserInfo{
     position: absolute;
-    margin-left: 40px;
+    margin-left: 53px;
     margin-top: 10px;
 
-    width: 150px;
-    height: 125px;
+    width: 135px;
+    height: 110px;
 
     background-color: #FFFFFF;
 }
 
 
-#UserInfo
-.info-layout{
+#UserInfo .info-layout{
     cursor: pointer;
     display: block;
     color: dimgray;
     text-indent: 20px;
-    font-weight: 600;
     font-size: 15px;
     height: 25px;
     padding-top: 10px;
 }
 
-a.info-layout:hover{
-    background-color: #E9EBED;
-}
+/*a.info-layout:hover{*/
+    /*background-color: #E9EBED;*/
+/*}*/
 
 #menu div, #menu a {
     color: white;
@@ -77,6 +73,9 @@ a{
     text-decoration: none;
 }
 
+#menu a:hover, #menu a:active, #menu a:visited, #menu a:link {
+    text-decoration: none;
+}
 
 #dashboard{
     margin-top: 30px;
@@ -85,8 +84,7 @@ a{
 
 }
 
-#dashboard
-.dafont{
+#dashboard .dafont{
     padding-top: 14px;
 }
 
@@ -121,14 +119,11 @@ ul.submenu{
 }
 
 .bgcolor {
-    background-color: #1F1F1F;
+    background-color: #162128;
 }
 
-.active{}
 
-
-ul.submenu
-li{
+ul.submenu li{
     list-style: none;
     font-size: 13px;
     margin-left: 20px;
@@ -140,20 +135,23 @@ li{
 }
 
 
-
-#navigation{
+.navigation{
     margin-top: 30px;
-    height: 60px;
+    height: 50px;
     background-color: white;
+    padding: 13px 15px;
 
     border-top: 1px #DCDDCC solid;
     border-bottom: 1px #DCDDCC solid;
 }
 
-#navigation
-.nav-content {
+.navigation .nav-content {
     padding-top: 20px;
     padding-left: 20px;
     font-size: 13px;
     font-weight: 600;
 }
+
+
+
+

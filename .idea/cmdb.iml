@@ -7,13 +7,12 @@
         <option name="settingsModule" value="cmdb/settings.py" />
         <option name="manageScript" value="manage.py" />
         <option name="environment" value="&lt;map/&gt;" />
-        <option name="commandsToSkip" value="" />
       </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 3.4.4 virtualenv at E:\projects\cmdb" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.4.6 virtualenv at ~/Documents/projects/cmdb" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
