@@ -3,6 +3,7 @@
 from hashlib import sha256
 from django.db import models
 from cmdb.models import Asset
+from django.db.models.fields import IntegerField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 
 
@@ -18,6 +19,14 @@ def fetch_related_field(model):
     for field in model._meta.get_fields():
         if isinstance(field, (ForeignKey, ManyToManyField)):
             model_map[field.name] = field.related_model
+    return model_map
+
+
+def fetch_integer_field(model):
+    model_map = {}
+    for field in model._meta.get_fields():
+        if isinstance(field, IntegerField):
+            model_map[field.name] = field.model
     return model_map
 
 

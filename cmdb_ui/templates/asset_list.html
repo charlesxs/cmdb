@@ -12,6 +12,8 @@
 {% endblock %}
 
 {% block content %}
+    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选资产删除失败 ! !</div>
+    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选资产 ! !</div>
     <!-- 当前页展示 -->
     <div class="content">
         <div class=" content-header">
@@ -19,8 +21,9 @@
         </div>
 
         <div class="content-op">
-            <a href="#" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
-            <a href="#" class="btn btn-danger btn-sm btn-asset-position">删除所选</a>
+            <a href="{% url 'cmdb_ui:asset_add' %}" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
+{#            <a href="#" class="btn btn-danger btn-sm btn-asset-position">删除所选</a>#}
+            <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
             <div class="search">
                 <div class="input-group search-width">
@@ -51,7 +54,7 @@
 
                 <tbody>
                     {% for asset in assets %}
-                    <tr>
+                    <tr data-id="{{ asset.id }}">
                         <td class="text-center">
                             <input type="checkbox" name="assetid" value="{{ asset.id }}">
                         </td>
@@ -70,13 +73,29 @@
                         {% endif %}
                         <td>
                             <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="#" class="btn btn-xs btn-info">编辑</a>
-                            <button class="btn btn-xs btn-danger">删除</button>
+                            <a href="{% url 'cmdb_ui:asset_edit' asset_id=asset.id %}" class="btn btn-xs btn-info">编辑</a>
+{#                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal"#}
+{#                                    data-target="#alert-modal-sm">删除</button>#}
+                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- 警告模态框 -->
+            <div class="modal fade" id="alert-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+              <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header"><h4 style="color: orangered; text-align: center;">警告</h4></div>
+                    <div class="modal-body"><h5 style="text-align: center;">确定要删除所选资产? 此操作不可逆</h5></div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn-modal-yes" class="btn btn-danger">删除</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+              </div>
+            </div>
 
             <!-- 分页 -->
             <nav aria-label="Page navigation" style="float: right;">
@@ -93,6 +112,7 @@
 
 
 {% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/list.js' %}"></script>
 {% endblock %}
 

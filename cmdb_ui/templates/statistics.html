@@ -50,6 +50,10 @@
 
 
 {% block JavaScripts %}
+        {% block script %}
+            <script type="text/javascript" src="{% static 'js/highcharts.js' %}"></script>
+        {% endblock %}
+
         <script>
         $(function () {
             $('#container').highcharts({

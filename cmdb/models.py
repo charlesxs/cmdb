@@ -48,8 +48,8 @@ class User(models.Model):
 
 class Asset(models.Model):
     STATE_CHOICE = (
-        (0, 'Disable'),
-        (1, 'Enable')
+        (0, 'offline'),
+        (1, 'online')
     )
     serialnum = models.CharField(max_length=200, unique=True)
     asset_type = models.ForeignKey(AssetType, null=True, blank=True, on_delete=models.SET_NULL)

@@ -1,26 +1,28 @@
-.box{
-    margin-left: 3%;
-    margin-right: 5%;
-    margin-top: 30px;
-    height: 1400px;
-    background-color: white;
+.tip-window{
+    position: relative;
+    padding: 6px;
+    margin-left: 10px;
 }
 
-.prompt{
-    background-color: #1A8AB3;
-    padding-top: 30px;
-    padding-left: 50px;
-
-    font-weight: 600;
+.tip-window:after, .tip-window:before{
+    /*border: 8px solid transparent;*/
+    border: solid transparent;
+    /*border-right: 10px solid #f00;*/
+    content: ' ';
+    height: 0;
+    right: 100%;
+    position: absolute;
+    width: 0;
 }
 
-.hostinfo{
-    margin-top: 30px;
-    margin-left: 150px;
+.tip-window:after{
+    border-width: 9px;
+    border-right-color: #f2dede;
+    top: 2px;
 }
 
-
-form input {
-    height: 25px;
-    width: 400px;
+.tip-window:before{
+    border-width: 9px;
+    border-right-color: #f2dede;
+    top: 2px;
 }

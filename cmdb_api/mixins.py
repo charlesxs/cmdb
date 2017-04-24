@@ -3,7 +3,7 @@ from django.http import Http404
 from copy import deepcopy
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .utils import get_models_field_name, fetch_related_field
+from .utils import get_models_field_name, fetch_related_field, fetch_integer_field
 from .serializers import ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer
 from cmdb.models import Asset
 
@@ -56,6 +56,19 @@ class IdNameConvertMixin:
                 data[k] = ng
         return data
 
+    @staticmethod
+    def to_id(dictdata, model):
+        data = deepcopy(dictdata)
+        model_map = fetch_related_field(model)
+        model_map.update(fetch_integer_field(model))
+        fields = {k: v for k, v in data.items() if k in model_map.keys()}
+        for k, v in fields.items():
+            if not isinstance(v, (int, list)) and v is not None:
+                data[k] = int(v)
+            elif isinstance(v, list):
+                data[k] = [int(i) for i in v]
+        return data
+
 
 class AssetListMixin(IdNameConvertMixin):
     def list(self, request, num=None):
@@ -63,7 +76,7 @@ class AssetListMixin(IdNameConvertMixin):
                   Asset.objects.order_by('-id')[:num])
         serials = []
         for asset in assets:
-            if asset.asset_type.name in ['服务器', '云主机', '虚拟机', '容器', 'docker']:
+            if asset.asset_type.name in ['服务器', '云主机', '虚拟机']:
                 serials.append(ServerAssetCreateUpdateSerializer(instance=asset).data)
             else:
                 serials.append(NetDeviceAssetCreateUpdateSerializer(instance=asset).data)

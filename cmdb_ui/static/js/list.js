@@ -2,46 +2,6 @@
  * Created by Administrator on 2016/5/28.
  */
 
-// $() == $(document).ready();
-$(function(){
-    var checkall = $('#checkall');
-    var allbox = $('tbody input[type="checkbox"]');
-
-    // 鼠标滑过表格时着色
-    $('tr').mouseover(function(){
-      $(this).addClass('movecolor');
-    }).mouseout(function () {
-        $(this).removeClass('movecolor');
-    });
-
-    //搜索
-    $('#search-input').keydown(function (event) {
-        if (event.keyCode === 13){
-            SearchGet();
-        }
-    });
-
-    $('.search-font').click(function () {
-        SearchGet();
-    });
-
-
-    // check all
-    checkall.on('click', function () {
-        allbox.each(function () {
-            this.checked = checkall[0].checked;
-            // $(this).attr('checked', !checkall.checked);
-        })
-    });
-
-    // 当某一个checkbox取消checked的时候, 取消 check all
-    allbox.click(function () {
-        if (this.checked === false ) {
-            checkall[0].checked = false;
-        }
-    });
-});
-
 
 var Pager = {
     pages: $('ul.pagination').children(),
@@ -66,62 +26,57 @@ var Pager = {
 function SearchGet(){
     var value = $('#search-input').val().trim();
     if(value !== ""){
-        var root_path = location.pathname.split('/').slice(0, 2).join('/') + '/';
-        $.get(root_path, {keyword: value}, function (data) {
-            // 替换整个当前页面
-            $(document).find("html").html(data);
-        } )
+        var root_path = location.pathname.split('/').slice(0, 2).join('/') + '/?keyword=';
+        console.log(root_path + value);
+        location.href = root_path + value;
     }
 }
 
-//
-// function SearchPost() {
-//    if ($('#search-input').val() != ""){
-//         var keyAry = window.location.href.split('/');
-//         for (i in keyAry){
-//             if (keyAry[i].indexOf('list')>0){
-//                 var key = keyAry[i].split('_')[0];
-//             }
-//         }
-//
-//         var csrftoken = getCookie('csrftoken');
-//         $.ajaxSetup({
-//             beforeSend: function (xhr) {
-//                 if (!this.crossDomain) {
-//                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
-//                 }
-//             }
-//         });
-//
-//         $.post('/mytest/search/',
-//                {search: $('#search-input').val(), searchtype: key},
-//                function (data) {
-//                    // $(document).find("html").html(data);
-//                    $('tbody').html(data);
-//         })
-//    } else {
-//         if ($('tbody').html().trim() == "") {
-//             location.reload();
-//         }
-//    }
-// }
-//
-// function getCookie(name) {
-//     var cookieValue = null;
-//     if (document.cookie && document.cookie != '') {
-//         var cookies = document.cookie.split(';');
-//         for (var i = 0; i < cookies.length; i++) {
-//             var cookie = jQuery.trim(cookies[i]);
-//             // Does this cookie string begin with the name we want?
-//             if (cookie.substring(0, name.length + 1) == (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
 
+function UndoAlarm(action) {
+    var speed = 1000;
+    switch (action) {
+        case 'success':
+            $('.alert-success').fadeOut(speed);
+            break;
+        case 'failed':
+            $('.alert-danger').fadeOut(speed);
+            break;
+    }
+}
+
+
+function DeleteItem(id, $objs) {
+    var $success = $('.alert-success');
+    var $failed = $('.alert-danger');
+
+    // 如果没有资产被选中，则退出, 不发请求.
+    if (id <= 0 || id.length <= 0){
+        $failed.text('没有任何资产被选中 ...');
+        $failed.removeClass('hidden');
+        setTimeout('UndoAlarm("failed")', 1000);
+        return ;
+    }
+
+    var ids = Array.isArray(id) ? JSON.stringify(id) : JSON.stringify([id]);
+    $.ajax({
+        type: 'POST',
+        url: location.pathname,
+        dataType: 'json',
+        data: {ids: ids},
+        success: function () {
+            $objs.remove();
+            $success.removeClass('hidden');
+            setTimeout('UndoAlarm("success")', 1000);
+        },
+        error: function (msgobj) {
+            var msg = JSON.parse(msgobj.responseText).msg;
+            $failed.text('资产删除失败, 理由: ' + msg);
+            $failed.removeClass('hidden');
+            setTimeout('UndoAlarm("failed")', 5000);
+        }
+    })
+}
 
 
 (function () {
@@ -142,3 +97,74 @@ function SearchGet(){
         }
     });
 })();
+
+
+
+// $() == $(document).ready();
+$(function(){
+    var $checkall = $('#checkall');
+    var $table = $('.table');
+    var $mymodal = $('#alert-modal-sm');
+
+    // 鼠标滑过表格时着色
+    $('tr').mouseover(function () {
+        $(this).addClass('movecolor');
+    }).mouseout(function () {
+        $(this).removeClass('movecolor');
+    });
+
+    //搜索
+    $('#search-input').keydown(function (event) {
+        if (event.keyCode === 13) {
+            SearchGet();
+        }
+    });
+
+    $('.search-font').click(function () {
+        SearchGet();
+    });
+
+
+    // check all
+    $checkall.on('click', function () {
+        $('tbody input[type="checkbox"]').each(function () {
+            this.checked = $checkall[0].checked;
+        })
+    });
+
+    // 当某一个checkbox取消checked的时候, 取消 check all
+    $table.on('click', 'tbody input[type="checkbox"]', function (e) {
+        var checkbox = e.target;
+        if (checkbox.checked === false) {
+            $checkall[0].checked = false;
+        }
+    }).on('click', 'tr button', function (e) {
+        var $pattr = $(e.target).parents('tr');
+        var data_id = $pattr.attr('data-id');
+        $mymodal.data('delete-id', data_id).data('delete-obj',
+            $pattr).modal();
+    });
+
+    // 取出已选择资产，调用模态框，并将数据传给模态框
+    $('#deletion-selected').on('click', function () {
+        var del_ids = [],
+            del_objs = [];
+
+        $('tr input[name="assetid"]').each(function (index, obj) {
+           if (obj.checked === true) {
+               del_ids.push($(obj).val());
+               del_objs.push($(obj).parents('tr')[0]);
+           }
+        });
+
+        $mymodal.data('delete-id', del_ids).data('delete-obj', $(del_objs)).modal();
+    });
+
+     // 出发模态框click, 删除所选资产
+    $('#btn-modal-yes').on('click', function () {
+        $mymodal.modal('hide');
+        DeleteItem($mymodal.data('delete-id'), $mymodal.data('delete-obj'));
+    });
+
+
+});

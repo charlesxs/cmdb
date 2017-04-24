@@ -36,41 +36,41 @@ $(function() {
     // 菜单的展示和隐藏
     $('.hide').hide().removeClass('hide');
     $('.parentMenu').on('click', function() {
-        var parentmenu = $(this);
-        var submenu = parentmenu.siblings('.submenu');
-        var activemenu = $('.parentMenu[active="active"]');
-        var navbar = $('#navbar');
+        var $parentmenu = $(this);
+        var $submenu = $parentmenu.siblings('.submenu');
+        var $activemenu = $('.parentMenu[active="active"]');
+        // var $navbar = $('#navbar');
         var speed = 'fast';
 
-        submenu.slideToggle(speed, function () {
-            if (parentmenu.attr('active')) {
-                parentmenu.removeAttr('active');
+        $submenu.slideToggle(speed, function () {
+            if ($parentmenu.attr('active')) {
+                $parentmenu.removeAttr('active');
 
                 PageRecoder.setActiveMenu(null);
             } else {
-                parentmenu.attr('active', 'active');
+                $parentmenu.attr('active', 'active');
 
                 PageRecoder.setActiveMenu(
-                    parentmenu.text().trim()
+                    $parentmenu.text().trim()
                 );
             }
         });
 
         //检查其他菜单，如果有是active的，就关闭菜单.
-        if (!parentmenu.is(activemenu)) {
-            activemenu.siblings('.submenu').slideUp(speed);
-            activemenu.removeAttr('active');
+        if (!$parentmenu.is($activemenu)) {
+            $activemenu.siblings('.submenu').slideUp(speed);
+            $activemenu.removeAttr('active');
         }
     });
 
     //个人信息隐藏和展示
     $('#viewUserInfo').on('click', function () {
-        var user = $('#UserInfo');
-        if (user.hasClass('hide')) {
-            user.fadeIn('slow').removeClass('hide');
+        var $user = $('#UserInfo');
+        if ($user.hasClass('hide')) {
+            $user.fadeIn('slow').removeClass('hide');
         } else {
-            user.fadeOut('slow', function () {
-                user.addClass('hide');
+            $user.fadeOut('slow', function () {
+                $user.addClass('hide');
             });
         }
     });

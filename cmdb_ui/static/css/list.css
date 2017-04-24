@@ -3,6 +3,10 @@
     background-color: white;
 }
 
+.content-padding{
+    padding-bottom: 20px;
+}
+
 .content-header {
     height: 65px;
     border-bottom: 1px #DBDBDB solid;
@@ -57,4 +61,8 @@ tr.movecolor{
 
 .page-color {
     background-color: #f1f1f1 !important;
+}
+
+.offset-left-2{
+    padding-left: 2%;
 }

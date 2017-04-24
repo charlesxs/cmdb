@@ -1,6 +1,7 @@
 # coding=utf-8
 #
 
+from cmdb_api.mixins import IdNameConvertMixin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
@@ -22,6 +23,31 @@ def get_username(id_):
     if user:
         return user.username, user.realname
     return None, None
+
+
+def clean_data(request, model):
+    usergroup = request.POST.getlist('usergroup[]')
+    usergroup = usergroup if usergroup else [1]
+    data = {
+        'server': {},
+        'networkdevice': {},
+        'usergroup': usergroup
+    }
+
+    for k, v in request.POST.items():
+        if k.startswith('server'):
+            data['server'][k.split('-')[-1]] = v if v else None
+        elif k.startswith('networkdevice'):
+            data['networkdevice'][k.split('-')[-1]] = v if v else None
+        elif k == 'comment':
+            data[request.POST['route']][k] = v if v else None
+        else:
+            data[k] = v if v else None
+    try:
+        data = IdNameConvertMixin().to_id(data, model)
+    except ValueError as e:
+        return data, str(e)
+    return data, None
 
 
 class Pager:

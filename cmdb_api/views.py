@@ -1,11 +1,11 @@
 # from django.shortcuts import render
 from django.http import Http404
-from django.views import generic
+# from django.views import generic
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import detail_route, list_route
-from rest_framework import mixins, generics
+# from rest_framework.decorators import detail_route, list_route
+# from rest_framework import mixins, generics
 from rest_framework import status
 from cmdb.models import Asset, AssetGroup, AssetType, UserGroup, IDC, User
 from .mixins import IdNameConvertMixin, AssetListMixin
@@ -30,6 +30,7 @@ class AssetListCreate(AssetListMixin, IdNameConvertMixin, APIView):
         data = self.name_to_id(request.data, Asset)
         if data.get('route'):
             route = data.pop('route')
+
         if route == 'server':
             serial = ServerAssetCreateUpdateSerializer(data=data)
         else:
