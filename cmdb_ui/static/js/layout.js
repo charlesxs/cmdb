@@ -3,7 +3,7 @@
  */
 
 
-var PageRecoder = {
+var MenuManager = {
     setActiveMenu: function (v) {
         localStorage.setItem('activePage', v);
     },
@@ -24,7 +24,7 @@ var PageRecoder = {
 
 // 自动展开 active 菜单
 (function () {
-    var activeMenu = PageRecoder.getActiveMenu();
+    var activeMenu = MenuManager.getActiveMenu();
     if (activeMenu) {
         activeMenu.siblings('.submenu').removeClass('hide');
         activeMenu.attr('active', 'active').removeAttr('display');
@@ -46,11 +46,11 @@ $(function() {
             if ($parentmenu.attr('active')) {
                 $parentmenu.removeAttr('active');
 
-                PageRecoder.setActiveMenu(null);
+                MenuManager.setActiveMenu(null);
             } else {
                 $parentmenu.attr('active', 'active');
 
-                PageRecoder.setActiveMenu(
+                MenuManager.setActiveMenu(
                     $parentmenu.text().trim()
                 );
             }

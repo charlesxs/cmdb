@@ -63,16 +63,16 @@
                         {% if asset.asset_type.name == '路由器' or asset.asset_type.name == '交换机' %}
                         <td>{{ asset.networkdevice.name }}</td>
                         <td></td>
-                        <td>{{ asset | fetch_groups_name | join:" " }}</td>
+                        <td>{{ asset | fetch_groups_name | join:"、" }}</td>
                         <td>{{ asset.networkdevice.comment }}</td>
                         {% else %}
                         <td>{{ asset.server.hostname }}</td>
                         <td>{{ asset.server.lan_ip }}</td>
-                        <td>{{ asset | fetch_groups_name | join:" " }}</td>
-                        <td>{{ asset.server.comment }}</td>
+                        <td>{{ asset | fetch_groups_name | join:"、" }}</td>
+                        <td>{{ asset.server.comment |default_if_none:"" }}</td>
                         {% endif %}
                         <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}" class="btn btn-xs btn-success">详情</a>
                             <a href="{% url 'cmdb_ui:asset_edit' asset_id=asset.id %}" class="btn btn-xs btn-info">编辑</a>
 {#                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal"#}
 {#                                    data-target="#alert-modal-sm">删除</button>#}

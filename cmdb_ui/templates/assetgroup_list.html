@@ -1,87 +1,114 @@
 {% extends "layout.html" %}
 {% load my_tags %}
+{% load static %}
 
 {% block link-css %}
-    <link rel="stylesheet" href="/static/css/list.css" />
+    <link rel="stylesheet" href="{% static 'css/list.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+    <li>资产管理</li>
+    <li class="active">查看资产组</li>
 {% endblock %}
 
 {% block content %}
+    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选资产组删除失败 ! !</div>
+    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选资产组 ! !</div>
     <!-- 当前页展示 -->
-   <div class="content">
-        <div class="content-header">
-            <h3 style="text-indent: 20px;">查看主机组</h3>
+    <div class="content">
+        <div class=" content-header">
+            <h3 style="text-indent: 20px;">查看资产组</h3>
         </div>
 
-        <div class="content-op ">
-            <a href="#">
-                <div class="add-host">添加小组</div>
-            </a>
-
-            <a href="#">
-                <div class="delete-selected">删除所选</div>
-            </a>
+        <div class="content-op">
+            <a href="{% url 'cmdb_ui:assetgroup_add' %}" class="btn btn-success btn-sm btn-asset-position">添加资产组</a>
+            <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
             <div class="search">
-                <input id="search-input" placeholder="group name" type="text" />
-                <span class="search-font">Search</span>
+                <div class="input-group search-width">
+                    <input id="search-input" type="text" class="form-control" placeholder="group name">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="button">Search</button>
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div class="table-page">
-            <table  cellspacing="0" cellpadding="10" class="table-style" >
+        <div class="table-page table-responsive">
+            <table class="table table-bordered" style="margin-bottom: -8px;">
                 <thead>
-                <tr class="head">
-                    <th width="15px;"><input type="checkbox" name="checkall" id="checkall" onclick="checkAll(this);"/></th>
-                    <th>组名</th>
-                    <th>主机数</th>
-                    <th>用户组数</th>
-                    <th width="145px">操作</th>
-                </tr>
+                    <tr>
+                        <th class="text-center">
+                            <input id="checkall" type="checkbox" name="checkall" value="checkall" >
+                        </th>
+                        <th>组名</th>
+                        <th>拥有主机数</th>
+                        <th>所属用户组/项目组</th>
+                        <th>注释</th>
+                        <th>操作</th>
+                    </tr>
                 </thead>
 
                 <tbody>
-                    {% for group in assetgroups %}
-                    <tr>
-                        <td ><input type="checkbox" name="infoList" value="{{ group.id }}"/></td>
-                        <td >{{ group.agroupname }}</td>
-                        <td >{% assetGroupInfo group.id 'asset' True %}</td>
-                        <td >{% assetGroupInfo group.id 'usergroup' True %}</td>
-                        <td>
-                            <div class="info-operator"><div class="font-control"><a href="#">详情</a></div></div>
-                            <div class="add-operator"><div class="font-control"><a href="#">编辑</a></div></div>
-                            <div class="delete-operator"><div class="font-control"><a href="#">删除</a></div></div>
+                    {% for ag in assetgroups %}
+                    <tr data-id="{{ ag.id }}">
+                        <td class="text-center">
+                            <input type="checkbox" name="assetgroupid" value="{{ ag.id }}">
                         </td>
+                        <td>{{ ag.groupname }}</td>
+                        <td>{{ ag | servers_count }}</td>
+                        <td>{{ ag | fetch_aggroup_name | join:"、" }}</td>
+                        <td>{{ ag.comment | default_if_none:"" }}</td>
+
+                        {% if ag.groupname == '默认' %}
+                        <td>
+                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="#" class="btn btn-xs btn-info" disabled>编辑</a>
+                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
+                        </td>
+                        {% else %}
+                         <td>
+                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:assetgroup_edit' assetgroup_id=ag.id %}" class="btn btn-xs btn-info">编辑</a>
+                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
+                        </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-
-        <!-- 分页 -->
-            <div class="page-border">
-                {{ pages_html }}
-{#                <a href="#" ><div class="page-button page-button-width">后一页</div></a>#}
-{#                <a href="#"><div class="page-button-num page-button">2</div></a>#}
-{#                <a href="#"><div class="page-button page-button-width">前一页</div></a>#}
-                <div class="clearfix"></div>
+            <!-- 警告模态框 -->
+            <div class="modal fade" id="alert-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+              <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header"><h4 style="color: orangered; text-align: center;">警告</h4></div>
+                    <div class="modal-body"><h5 style="text-align: center;">确定要删除所选资产组? 此操作不可逆</h5></div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn-modal-yes" class="btn btn-danger">删除</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+              </div>
             </div>
-        </div>
 
+            <!-- 分页 -->
+            <nav aria-label="Page navigation" style="float: right;">
+                <ul class="pagination">
+{#                    <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>#}
+{#                    <li><a href="{% url 'cmdb_ui:asset_list' page_num=1 %}">1</a></li>#}
+                    {{ page_html }}
+{#                    <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>#}
+                </ul>
+            </nav>
+        </div>
     </div>
 {% endblock %}
 
 
 {% block JavaScripts %}
-    <script type="text/javascript">
-        (function($){
-            //展开菜单
-            $('.parentMenu span').each(function () {
-                if ($(this).html() == '资产管理') {
-                    $(this).parent().addClass('bgcolor active');
-                    $(this).parent().siblings('.submenu').removeClass('hide');
-                }
-            });
-        })(jQuery);
-    </script>
-    <script type="text/javascript" src="/static/js/list.js"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/list.js' %}"></script>
 {% endblock %}
+
+

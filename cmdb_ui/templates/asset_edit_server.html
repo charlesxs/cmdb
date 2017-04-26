@@ -22,7 +22,7 @@
             <h3 style="text-indent: 20px;">编辑资产信息</h3>
         </div>
 
-        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_edit' asset_id=asset.id %}" method="POST">
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_edit' asset_id %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="route" id="route" value="server">
 
@@ -72,14 +72,14 @@
             <div class="form-group">
                 <label for="rack_number" class="col-sm-2 control-label">机柜号</label>
                 <div class="col-sm-6">
-                    <input type="number" name="rack_number" class="form-control" id="rack_number" placeholder="输入必须为数字" value="{{ asset.rack_number| to_null }}">
+                    <input type="number" name="rack_number" class="form-control" id="rack_number" placeholder="输入必须为数字" value="{{ asset.rack_number| default_if_none:"" }}">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="rack_position" class="col-sm-2 control-label">机柜U位</label>
                 <div class="col-sm-6">
-                    <input type="number" class="form-control" name="rack_position" id="rack_position" placeholder="输入必须为数字" value="{{ asset.rack_position |to_null}}">
+                    <input type="number" class="form-control" name="rack_position" id="rack_position" placeholder="输入必须为数字" value="{{ asset.rack_position |default_if_none:""}}">
                 </div>
             </div>
 
@@ -136,14 +136,14 @@
                 <div class="form-group">
                     <label for="wan_ip" class="col-sm-2 control-label">外网IP</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-wan_ip" id="wan_ip" value="{{ asset.server.wan_ip | to_null}}">
+                        <input type="text" class="form-control" name="server-wan_ip" id="wan_ip" value="{{ asset.server.wan_ip | default_if_none:""}}">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="vendor" class="col-sm-2 control-label">供应商/机器型号</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-vendor" id="vendor" value="{{ asset.server.vendor | to_null}}">
+                        <input type="text" class="form-control" name="server-vendor" id="vendor" value="{{ asset.server.vendor | default_if_none:""}}">
                     </div>
                 </div>
 
@@ -182,14 +182,14 @@
                 <div class="form-group">
                     <label for="phost_ip" class="col-sm-2 control-label">宿主机IP</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-phost_ip" id="phost_ip" {{ asset.server.phost_ip|to_null }}>
+                        <input type="text" class="form-control" name="server-phost_ip" id="phost_ip" {{ asset.server.phost_ip|default_if_none:"" }}>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="comment" class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" name="comment" id="comment" value="{{ asset.server.comment |to_null }}">
+                    <input type="text" class="form-control" name="comment" id="comment" value="{{ asset.server.comment |default_if_none:"" }}">
                 </div>
             </div>
             <div class="form-group">

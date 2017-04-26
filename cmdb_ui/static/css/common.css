@@ -49,3 +49,25 @@ a.font-logout {
    color: #919191;
 }
 
+.content{
+    margin: 30px 2% 0 2%;
+    background-color: white;
+}
+
+.content-padding{
+    padding-bottom: 20px;
+}
+
+.content-header {
+    height: 65px;
+    border-bottom: 1px #DBDBDB solid;
+    border-top: 3px #DBDBDB solid;
+}
+
+
+.content-op{
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+

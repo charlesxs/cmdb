@@ -1,0 +1,144 @@
+{% extends 'layout.html' %}
+{% load my_tags %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/asset_detail.css' %}">
+{% endblock %}
+
+{% block navbar %}
+    <li>资产管理</li>
+    <li class="active">资产详情</li>
+{% endblock %}
+
+{% block content %}
+    <div class="content content-padding">
+        <div class="content-header">
+            <h3 style="text-indent: 20px;">资产详情</h3>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-1">
+            <table class="table-responsive table">
+                <tr>
+                    <th>资产序列号</th>
+                    <td>{{ asset.serialnum }}</td>
+                </tr>
+                <tr>
+                    <th>资产类型</th>
+                    <td>{{ asset.asset_type.name }}</td>
+                </tr>
+{#                {% if asset.asset_type.name == '服务器' or asset.asset_type.name == '虚拟机' or asset.asset_type.name == '云主机' %}#}
+                {% if asset.asset_type.name in servers %}
+                <tr>
+                    <th>主机名</th>
+                    <td>{{ asset.server.hostname }}</td>
+                </tr>
+                <tr>
+                    <th>内网IP</th>
+                    <td>{{ asset.server.lan_ip }}</td>
+                </tr>
+                <tr>
+                    <th>外网IP</th>
+                    <td>{{ assest.server.wan_ip |default_if_none:"nothing" }}</td>
+                </tr>
+                <tr>
+                    <th>CPU</th>
+                    <td>{{ asset.server.cpu }}</td>
+                </tr>
+                <tr>
+                    <th>内存</th>
+                    <td>{{ asset.server.memory }}</td>
+                </tr>
+                <tr>
+                    <th>磁盘</th>
+                    <td>{{ asset.server.disk }}</td>
+                </tr>
+                <tr>
+                    <th>操作系统</th>
+                    <td>{{ asset.server.os }}</td>
+                </tr>
+                <tr>
+                    <th>宿主机IP</th>
+                    <td>{{ asset.server.phost_ip |default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>供应商</th>
+                    <td>{{ asset.srever.vendor |default_if_none:"" }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <th>设备名/设备型号</th>
+                    <td>{{ asset.networkdevice.name }}</td>
+                </tr>
+                <tr>
+                    <th>供应商</th>
+                    <td>{{ asset.networkdevice.vendor |default_if_none:"" }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>所属机房</th>
+                    <td>{{ asset.idc.name }}</td>
+                </tr>
+                <tr>
+                    <th>机架号</th>
+                    <td>{{ asset.rack_number| default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>机架U位</th>
+                    <td>{{ asset.rack_position| default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>所属用户组/项目组</th>
+                    <td>{{ asset | fetch_groups_name | join:" "}}</td>
+                </tr>
+                <tr>
+                    <th>所属资产组</th>
+                    <td>{{ asset.assetgroup.groupname }}</td>
+                </tr>
+                <tr>
+                    <th>创建日期</th>
+                    <td>{{ asset.create_time |date:"Y-m-d H:i:s"}}</td>
+                </tr>
+                <tr>
+                    <th>最近更新日期</th>
+                    <td>{{ asset.update_time |date:"Y-m-d H:i:s" }}</td>
+                </tr>
+
+                <tr>
+                    <th>备注</th>
+                    {% if asset.asset_type.name in servers %}
+                    <td>{{ asset.server.comment |default_if_none:"" }}</td>
+                    {% else %}
+                    <td>{{ asset.networkdevice.comment | default_if_none:"" }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>状态</th>
+                    {% if asset.state == 1 %}
+                    <td>在线</td>
+                    {% else %}
+                    <td>离线</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-1">
+            <table class="table table-responsive">
+                <tr>
+                    <th>该资产服役时长: </th>
+                    {% if active_time.days > 365 %}
+                    <td>{{ active_time.days | days_to_years:"years" }} 年 {{ active_time.days | days_to_years:"days" }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
+                    {% else %}
+                    <td>{{ active_time.days }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+{% endblock %}
+
+
+{% block JavaScripts %}
+{% endblock %}

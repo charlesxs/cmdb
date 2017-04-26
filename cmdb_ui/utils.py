@@ -25,7 +25,7 @@ def get_username(id_):
     return None, None
 
 
-def clean_data(request, model):
+def clean_asset_form_data(request, model):
     usergroup = request.POST.getlist('usergroup[]')
     usergroup = usergroup if usergroup else [1]
     data = {
@@ -50,6 +50,17 @@ def clean_data(request, model):
     return data, None
 
 
+def clean_form_data(request, model):
+    data = {}
+    for k, v in request.POST.items():
+        data[k] = v if v else None
+    try:
+        data = IdNameConvertMixin().to_id(data, model)
+    except ValueError as e:
+        return data, str(e)
+    return data, None
+
+
 class Pager:
     num_html = '<li><a href="%s">%d</a></li>'
     more_html = '<li><a href="%s">...</a></li>'
@@ -65,7 +76,7 @@ class Pager:
 
     def url(self, num):
         page_url = '/'.join([self.uri, str(num), ""])
-        if self.searchargs:
+        if self.searchargs['keyword'] is not None:
             return page_url + '?' + urlencode(self.searchargs)
         return page_url
 
@@ -112,4 +123,9 @@ class Pager:
         return start, end, html
 
 
-
+def pages(queryset, page_num, uri, page_total_item_num, keyword=None):
+    d, m = divmod(queryset.count(), page_total_item_num)
+    total_page = d + (1 if m > 0 else m)
+    start, end, page_html = Pager(total_page, int(page_num), uri,
+                                  page_total_item_num, keyword=keyword).page()
+    return start, end, page_html

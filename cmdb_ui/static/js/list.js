@@ -3,7 +3,7 @@
  */
 
 
-var Pager = {
+var PageRecoder = {
     pages: $('ul.pagination').children(),
     get_page_num: function () {
         var path = location.pathname.split('/');
@@ -52,8 +52,8 @@ function DeleteItem(id, $objs) {
 
     // 如果没有资产被选中，则退出, 不发请求.
     if (id <= 0 || id.length <= 0){
-        $failed.text('没有任何资产被选中 ...');
-        $failed.removeClass('hidden');
+        $failed.text('没有任何项目被选中 ...');
+        $failed.removeClass('hidden').removeAttr('style');
         setTimeout('UndoAlarm("failed")', 1000);
         return ;
     }
@@ -66,13 +66,13 @@ function DeleteItem(id, $objs) {
         data: {ids: ids},
         success: function () {
             $objs.remove();
-            $success.removeClass('hidden');
+            $success.removeClass('hidden').removeAttr('style');
             setTimeout('UndoAlarm("success")', 1000);
         },
         error: function (msgobj) {
             var msg = JSON.parse(msgobj.responseText).msg;
-            $failed.text('资产删除失败, 理由: ' + msg);
-            $failed.removeClass('hidden');
+            $failed.text('删除失败, 理由: ' + msg);
+            $failed.removeClass('hidden').removeAttr('style');
             setTimeout('UndoAlarm("failed")', 5000);
         }
     })
@@ -85,8 +85,8 @@ function DeleteItem(id, $objs) {
     $('tr:odd').addClass('oddcolor');
 
     //给当前分页按钮着色
-    var current = Pager.get_page_num();
-    Pager.pages.each(function (i) {
+    var current = PageRecoder.get_page_num();
+    PageRecoder.pages.each(function (i) {
         if (current === 1 && i === 0){
             $(this).addClass('disabled');
             $(this).children().attr('href', '#');
@@ -150,7 +150,7 @@ $(function(){
         var del_ids = [],
             del_objs = [];
 
-        $('tr input[name="assetid"]').each(function (index, obj) {
+        $('tbody input[type="checkbox"]').each(function (index, obj) {
            if (obj.checked === true) {
                del_ids.push($(obj).val());
                del_objs.push($(obj).parents('tr')[0]);
