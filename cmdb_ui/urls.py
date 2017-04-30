@@ -2,7 +2,7 @@ from django.conf.urls import url
 from .views import (login, index, logout, asset_list,
                     asset_add, asset_edit, asset_detail, assetgroup_list,
                     assetgroup_add, assetgroup_edit, idc_list, idc_add, idc_edit,
-                    user_list)
+                    user_list, user_add)
 
 
 urlpatterns = [
@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^idc_edit/(?P<idc_id>[0-9]+)/$', idc_edit, name='idc_edit'),
 
     url(r'^user_list/(?P<page_num>[0-9]+)?/?$', user_list, name='user_list'),
+    url(r'^user_add/$', user_add, name='user_add'),
 
 ]

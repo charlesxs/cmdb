@@ -401,3 +401,30 @@ def user_list(request, page_num):
     return render(request, 'user_list.html', locals())
 
 
+@require_login
+def user_add(request):
+    username, realname = get_username(request.session['uid'])
+    usergroups = UserGroup.objects.all()
+
+    if request.method == 'POST':
+        data, errors = clean_form_data(request, User, multikey=('usergroup', ))
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'user_add.html', locals())
+
+        data['password'] = encrypt_pwd(data['password'])
+
+        serial = UserSerializer(data=data)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'user_add.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'user_add.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'user_add.html', locals())
+
+
+
+

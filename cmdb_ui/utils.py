@@ -50,10 +50,14 @@ def clean_asset_form_data(request, model):
     return data, None
 
 
-def clean_form_data(request, model):
+def clean_form_data(request, model, multikey=()):
     data = {}
     for k, v in request.POST.items():
-        data[k] = v if v else None
+        if k in multikey:
+            data[k] = request.POST.getlist(k)
+            print('data', data[k])
+        else:
+            data[k] = v if v else None
     try:
         data = IdNameConvertMixin().to_id(data, model)
     except ValueError as e:

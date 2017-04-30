@@ -41,7 +41,7 @@ $(function () {
         }
     });
 
-    $required.on('change', function () {
+    $required.on('focus', function () {
         var selector = 'span[bind_name=' + this.name + ']';
         if (!$(selector).hasClass('hidden')) {
             $(selector).addClass('hidden');
