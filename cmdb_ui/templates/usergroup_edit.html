@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/add.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+    <li>用户管理</li>
+    <li class="active">编辑用户组信息</li>
+{% endblock %}
+
+{% block content %}
+    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">用户组修改失败: {{ errors }}</div>
+    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">用户组修改成功 ! !</div>
+    <!-- 当前页展示 -->
+    <div class="content content-padding">
+        <div class="content-header">
+            <h3 style="text-indent: 20px;">编辑用户组信息</h3>
+        </div>
+
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:usergroup_edit' usergroup_id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="groupname" class="col-sm-2 control-label">组名</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="groupname" name="groupname" aria-required="true" value="{{ usergroup.groupname }}">
+                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="groupname">该字段不能为空!</span>
+            </div>
+
+            <div class="form-group">
+                <label for="comment" class="col-sm-2 control-label">注释</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="comment" name="comment" value="{{ usergroup.comment |default_if_none:"" }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button type="button" id="submit_button" class="btn btn-sm btn-success form-control">提交</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/add.js' %}"></script>
+{% endblock %}

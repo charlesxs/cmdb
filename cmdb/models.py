@@ -13,6 +13,7 @@ class AssetGroup(models.Model):
 class UserGroup(models.Model):
     groupname = models.CharField(max_length=100, unique=True, db_index=True)
     assetgroup = models.ManyToManyField(AssetGroup, null=True, blank=True)
+    comment = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.groupname

@@ -8,13 +8,13 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.contrib.auth import authenticate
+# from django.contrib.auth import authenticate
 from cmdb.models import User, UserGroup, Asset, AssetGroup, IDC, AssetType
 from cmdb_api.utils import encrypt_pwd
 from .utils import require_login, get_username, clean_asset_form_data, pages, clean_form_data
 from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
                                   AssetGroupSerializer, IDCSerializer, UserSerializer, UserGroupSerializer)
-from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
+# from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
 from datetime import datetime
 # Create your views here.
 
@@ -171,6 +171,8 @@ def asset_edit(request, asset_id):
             serial.save()
             hidden_failed = 'hidden'
             return render(request, 'asset_edit_{0}.html'.format(route), locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'asset_edit_{0}.html'.format(route), locals())
 
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'asset_edit_{0}.html'.format(route), locals())
@@ -206,6 +208,8 @@ def assetgroup_list(request, page_num):
                                 status=400)
         try:
             idlist = [int(i) for i in json.loads(ids)]
+            if 1 in idlist:
+                return JsonResponse({'code': 403, 'msg': '不能删除 "默认" 分组'}, status=403)
             AssetGroup.objects.filter(id__in=idlist).delete()
         except Exception as e:
             return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
@@ -274,6 +278,8 @@ def assetgroup_edit(request, assetgroup_id):
             serial.save()
             hidden_failed = 'hidden'
             return render(request, 'assetgroup_edit.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'assetgroup_edit.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'assetgroup_edit.html', locals())
@@ -359,6 +365,8 @@ def idc_edit(request, idc_id):
             serial.save()
             hidden_failed = 'hidden'
             return render(request, 'idc_edit.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'idc_edit.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'idc_edit.html', locals())
@@ -376,6 +384,8 @@ def user_list(request, page_num):
                                 status=400)
         try:
             idlist = [int(i) for i in json.loads(ids)]
+            if 1 in idlist:
+                return JsonResponse({'code': 403, 'msg': '不能删除 admin 用户'}, status=403)
             User.objects.filter(id__in=idlist).delete()
         except Exception as e:
             return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
@@ -404,7 +414,7 @@ def user_list(request, page_num):
 @require_login
 def user_add(request):
     username, realname = get_username(request.session['uid'])
-    usergroups = UserGroup.objects.all()
+    usergroups = UserGroup.objects.order_by('id')
 
     if request.method == 'POST':
         data, errors = clean_form_data(request, User, multikey=('usergroup', ))
@@ -424,6 +434,130 @@ def user_add(request):
 
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'user_add.html', locals())
+
+
+@require_login
+def user_edit(request, user_id):
+    username, realname = get_username(request.session['uid'])
+    usergroups = UserGroup.objects.order_by('id')
+
+    try:
+        pk = int(user_id)
+        user = User.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        hidden_success, errors = 'hidden', str(e)
+        return render(request, 'user_edit.html', locals())
+
+    if request.method == 'POST':
+        data, errors = clean_form_data(request, User, multikey=('usergroup', ))
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'user_edit.html', locals())
+
+        if data['password'] == user.password[:20]:
+            data.pop('password')
+        else:
+            data['password'] = encrypt_pwd(data['password'])
+
+        serial = UserSerializer(user, data=data, partial=True)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'user_edit.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'user_edit.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'user_edit.html', locals())
+
+
+@require_login
+def usergroup_list(request, page_num):
+    username, realname = get_username(request.session['uid'])
+
+    # delete operation
+    if request.method == 'POST':
+        ids = request.POST.get('ids')
+        if ids is None:
+            return JsonResponse({'code': 400, 'msg': 'request error, not receive any data'},
+                                status=400)
+        try:
+            idlist = [int(i) for i in json.loads(ids)]
+            if 1 in idlist:
+                return JsonResponse({'code': 403, 'msg': '不能删除 管理员组'}, status=403)
+            UserGroup.objects.filter(id__in=idlist).delete()
+        except Exception as e:
+            return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
+        return JsonResponse({'code': 200, 'msg': 'delete ok'}, status=200)
+
+    # search and list
+    page_total_item_num = 10
+    if page_num is None:
+        page_num = 1
+    keyword = request.GET.get('keyword', None)
+
+    if keyword is not None:
+        queryset = UserGroup.objects.filter(groupname__contains=keyword)
+        start, end, page_html = pages(queryset, page_num, '/usergroup_list',
+                                      page_total_item_num, keyword=keyword)
+    else:
+        queryset = UserGroup.objects.all()
+        start, end, page_html = pages(queryset, page_num, '/usergroup_list',
+                                      page_total_item_num)
+
+    usergroups = queryset[start:end]
+    return render(request, 'usergroup_list.html', locals())
+
+
+@require_login
+def usergroup_add(request):
+    username, realname = get_username(request.session['uid'])
+
+    if request.method == 'POST':
+        data, errors = clean_form_data(request, UserGroup)
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'usergroup_add.html', locals())
+
+        serial = UserGroupSerializer(data=data)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'usergroup_add.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'usergroup_add.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'usergroup_add.html', locals())
+
+
+@require_login
+def usergroup_edit(request, usergroup_id):
+    username, realname = get_username(request.session['uid'])
+
+    try:
+        pk = int(usergroup_id)
+        usergroup = UserGroup.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        hidden_success, errors = 'hidden', str(e)
+        return render(request, 'usergroup_edit.html', locals())
+
+    if request.method == 'POST':
+        data, errors = clean_form_data(request, UserGroup)
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'usergroup_edit.html', locals())
+
+        serial = UserGroupSerializer(usergroup, data=data)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'usergroup_edit.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'usergroup_edit.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'usergroup_edit.html', locals())
 
 
 

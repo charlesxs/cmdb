@@ -8,34 +8,84 @@
 {% endblock %}
 
 {% block navbar %}
-    <li>资产管理</li>
-    <li class="active">编辑资产组信息</li>
+    <li>用户管理</li>
+    <li class="active">编辑用户信息</li>
 {% endblock %}
 
 {% block content %}
-    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">资产组修改失败: {{ errors }}</div>
-    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">资产组修改成功 ! !</div>
+    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">用户信息修改失败: {{ errors }}</div>
+    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">用户信息修改成功 ! !</div>
     <!-- 当前页展示 -->
     <div class="content content-padding">
         <div class="content-header">
-            <h3 style="text-indent: 20px;">编辑资产组信息</h3>
+            <h3 style="text-indent: 20px;">编辑用户信息</h3>
         </div>
 
-        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:assetgroup_edit' assetgroup_id %}" method="POST">
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:user_edit' user_id %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="groupname" class="col-sm-2 control-label">组名</label>
+                <label for="username" class="col-sm-2 control-label">用户名</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="groupname" name="groupname" aria-required="true" value="{{ assetgroup.groupname }}">
+                    <input type="text" class="form-control" id="username" name="username" aria-required="true" placeholder="user name" value="{{ user.username }}">
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
-                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="groupname">该字段不能为空!</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="username">该字段不能为空!</span>
             </div>
 
             <div class="form-group">
-                <label for="comment" class="col-sm-2 control-label">注释</label>
+                <label for="realname" class="col-sm-2 control-label">姓名</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="comment" name="comment" value="{{ assetgroup.comment |default_if_none:"" }}">
+                    <input type="text" class="form-control" id="realname" name="realname" placeholder="real name" value="{{ user.realname }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password1" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="password1" name="password1" aria-required="true" value="{{ user.password|slice:":20" }}">
+                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="password1">该字段不能为空!</span>
+            </div>
+
+            <div class="form-group">
+                <label for="password2" class="col-sm-2 control-label">再次输入密码</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="password2" name="password" aria-required="true" value="{{ user.password|slice:":20" }}">
+                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="password">该字段不能为空!</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" id="errPass">两次输入的密码不相同!</span>
+            </div>
+
+            <div class="form-group">
+                <label for="usergroup" class="col-sm-2 control-label">用户组</label>
+                <div class="col-sm-6">
+                    <select name="usergroup" id="usergroup" multiple class="form-control">
+                        {% for usergroup in usergroups %}
+                            {% if usergroup.id in user|fetch_groups_id %}
+                        <option value="{{ usergroup.id }}" selected>{{ usergroup.groupname }}</option>
+                            {% else %}
+                        <option value="{{ usergroup.id }}">{{ usergroup.groupname }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">邮箱</label>
+                <div class="col-sm-6">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="xxx@example.com" aria-required="true" value="{{ user.email }}">
+                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="email">该字段不能为空!</span>
+            </div>
+
+            <div class="form-group">
+                <label for="mobile" class="col-sm-2 control-label">手机</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="mobile" name="mobile" value="{{ user.mobile|default_if_none:" " }}">
                 </div>
             </div>
             <div class="form-group">
@@ -51,4 +101,35 @@
 
 {% block JavaScripts %}
     <script type="text/javascript" src="{% static 'js/add.js' %}"></script>
+    <script>
+    $(function () {
+        var $submit_button = $('#submit_button');
+        var $required = $('input[aria-required="true"]');
+        var $pass1 = $('#password1');
+        var $pass2 = $('#password2');
+        var $errpass = $('#errPass');
+
+        // remove other events;
+        $submit_button.off();
+
+        $submit_button.on('click', function () {
+            if (!checkNull($required)){
+                return false;
+            }
+
+            if ($pass1.val().trim() === $pass2.val().trim()) {
+                $errpass.addClass('hidden');
+                $('form').submit();
+            } else {
+                $errpass.removeClass('hidden');
+            }
+        });
+
+        $pass2.on('focus', function () {
+            if (!$errpass.hasClass('hidden')){
+                $errpass.addClass('hidden');
+            }
+        });
+    })
+    </script>
 {% endblock %}

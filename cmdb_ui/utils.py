@@ -55,7 +55,6 @@ def clean_form_data(request, model, multikey=()):
     for k, v in request.POST.items():
         if k in multikey:
             data[k] = request.POST.getlist(k)
-            print('data', data[k])
         else:
             data[k] = v if v else None
     try:

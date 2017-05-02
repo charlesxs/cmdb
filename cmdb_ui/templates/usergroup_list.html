@@ -8,25 +8,25 @@
 
 {% block navbar %}
     <li>用户管理</li>
-    <li class="active">查看用户</li>
+    <li class="active">查看用户组</li>
 {% endblock %}
 
 {% block content %}
-    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选用户删除失败 ! !</div>
-    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选用户 ! !</div>
+    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选用户组删除失败 ! !</div>
+    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选用户组 ! !</div>
     <!-- 当前页展示 -->
     <div class="content">
         <div class=" content-header">
-            <h3 style="text-indent: 20px;">查看用户</h3>
+            <h3 style="text-indent: 20px;">查看用户组</h3>
         </div>
 
         <div class="content-op">
-            <a href="{% url 'cmdb_ui:user_add' %}" class="btn btn-success btn-sm btn-asset-position">添加用户</a>
+            <a href="{% url 'cmdb_ui:usergroup_add' %}" class="btn btn-success btn-sm btn-asset-position">添加用户组</a>
             <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
             <div class="search">
                 <div class="input-group search-width">
-                    <input id="search-input" type="text" class="form-control" placeholder="username or realname">
+                    <input id="search-input" type="text" class="form-control" placeholder="group name">
                     <span class="input-group-btn">
                         <button class="btn btn-info" type="button">Search</button>
                     </span>
@@ -41,37 +41,35 @@
                         <th class="text-center">
                             <input id="checkall" type="checkbox" name="checkall" value="checkall" >
                         </th>
-                        <th>用户名</th>
-                        <th>姓名</th>
-                        <th>所属用户组</th>
-                        <th>邮箱</th>
-                        <th>电话</th>
+                        <th>组名</th>
+                        <th>拥有主机数</th>
+                        <th>拥有资产组</th>
+                        <th>注释</th>
                         <th>操作</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for user in users %}
-                    <tr data-id="{{ user.id }}">
+                    {% for ug in usergroups %}
+                    <tr data-id="{{ ug.id }}">
                         <td class="text-center">
-                            <input type="checkbox" name="userid" value="{{ user.id }}">
+                            <input type="checkbox" name="assetgroupid" value="{{ ug.id }}">
                         </td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.realname }}</td>
-                        <td>{{ user | fetch_groups_name | join:"、" }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.mobile | default_if_none:"" }}</td>
+                        <td>{{ ug.groupname }}</td>
+                        <td>{{ ug | servers_count }}</td>
+                        <td>{{ ug | fetch_assetgroup_names | join:"、" }}</td>
+                        <td>{{ ug.comment | default_if_none:"" }}</td>
 
-                        {% if user.username == 'admin' %}
+                        {% if ug.groupname == '管理员组' %}
                         <td>
                             <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
+                            <a href="#" class="btn btn-xs btn-info" disabled>编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
                         </td>
                         {% else %}
                          <td>
                             <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
+                            <a href="{% url 'cmdb_ui:usergroup_edit' usergroup_id=ug.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
                         {% endif %}
@@ -85,7 +83,7 @@
               <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header"><h4 style="color: orangered; text-align: center;">警告</h4></div>
-                    <div class="modal-body"><h5 style="text-align: center;">确定要删除所选用户? 此操作不可逆</h5></div>
+                    <div class="modal-body"><h5 style="text-align: center;">确定要删除所选用户组? 此操作不可逆</h5></div>
                     <div class="modal-footer">
                         <button type="button" id="btn-modal-yes" class="btn btn-danger">删除</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
