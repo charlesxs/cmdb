@@ -27,7 +27,7 @@ function SearchGet(){
     var value = $('#search-input').val().trim();
     if(value !== ""){
         var root_path = location.pathname.split('/').slice(0, 2).join('/') + '/?keyword=';
-        console.log(root_path + value);
+        // console.log(root_path + value);
         location.href = root_path + value;
     }
 }

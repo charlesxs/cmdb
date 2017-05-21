@@ -64,3 +64,9 @@ def servers_count(obj):
 def fetch_assetgroup_names(usergroup):
     return [group.groupname for group in usergroup.assetgroup.all()]
 
+
+@register.filter(name='fetch_assetgroup_objs')
+def fetch_assetgroup_objs(usergroup):
+    return usergroup.assetgroup.all()
+
+

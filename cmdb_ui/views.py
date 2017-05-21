@@ -2,6 +2,7 @@
 #
 
 import json
+from collections import ChainMap
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -286,6 +287,24 @@ def assetgroup_edit(request, assetgroup_id):
 
 
 @require_login
+def assetgroup_detail(request, assetgroup_id):
+    username, realname = get_username(request.session['uid'])
+    try:
+        pk = int(assetgroup_id)
+        assetgroup = AssetGroup.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        raise Http404
+
+    # groups = user.usergroup.all()
+    # assetgroups = (group.assetgroup.all() for group in groups)
+    # asset_querysets = set(group.asset_set.all() for group in groups)
+    # if len(asset_querysets) < 10:
+    #     asset_querysets.update(set(group.asset_set.all() for group in ChainMap(*assetgroups)))
+    # assets = ChainMap(*asset_querysets)
+    return render(request, 'user_detail.html', locals())
+
+
+@require_login
 def idc_list(request, page_num):
     username, realname = get_username(request.session['uid'])
 
@@ -459,6 +478,11 @@ def user_edit(request, user_id):
         else:
             data['password'] = encrypt_pwd(data['password'])
 
+        # disable to change username.
+        if data.get('username'):
+            hidden_success, errors = 'hidden', '不能修改用户名'
+            return render(request, 'user_edit.html', locals())
+
         serial = UserSerializer(user, data=data, partial=True)
         if serial.is_valid():
             serial.save()
@@ -469,6 +493,25 @@ def user_edit(request, user_id):
 
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'user_edit.html', locals())
+
+
+@require_login
+def user_detail(request, user_id):
+    username, realname = get_username(request.session['uid'])
+    servers = ('服务器', '云主机', '虚拟机')
+    try:
+        pk = int(user_id)
+        user = User.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        raise Http404
+
+    groups = user.usergroup.all()
+    assetgroups = (group.assetgroup.all() for group in groups)
+    asset_querysets = set(group.asset_set.all() for group in groups)
+    if len(asset_querysets) < 10:
+        asset_querysets.update(set(group.asset_set.all() for group in ChainMap(*assetgroups)))
+    assets = ChainMap(*asset_querysets)
+    return render(request, 'user_detail.html', locals())
 
 
 @require_login
@@ -559,6 +602,24 @@ def usergroup_edit(request, usergroup_id):
     hidden_failed = hidden_success = 'hidden'
     return render(request, 'usergroup_edit.html', locals())
 
+
+@require_login
+def usergroup_detail(request, usergroup_id):
+    username, realname = get_username(request.session['uid'])
+    servers = ('服务器', '云主机', '虚拟机')
+    try:
+        pk = int(usergroup_id)
+        usergroup = UserGroup.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        raise Http404
+
+    # groups = user.usergroup.all()
+    # assetgroups = (group.assetgroup.all() for group in groups)
+    # asset_querysets = set(group.asset_set.all() for group in groups)
+    # if len(asset_querysets) < 10:
+    #     asset_querysets.update(set(group.asset_set.all() for group in ChainMap(*assetgroups)))
+    # assets = ChainMap(*asset_querysets)
+    return render(request, 'usergroup_detail.html', locals())
 
 
 

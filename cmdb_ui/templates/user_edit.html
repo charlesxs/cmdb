@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label for="username" class="col-sm-2 control-label">用户名</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="username" name="username" aria-required="true" placeholder="user name" value="{{ user.username }}">
+                    <input type="text" class="form-control" id="username" name="username" aria-required="true" placeholder="user name" value="{{ user.username }}" disabled>
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
                 <span class="alert alert-danger tip-window hidden" role="alert" bind_name="username">该字段不能为空!</span>
@@ -94,7 +94,6 @@
                 </div>
             </div>
         </form>
-
     </div>
 
 {% endblock %}
@@ -130,6 +129,7 @@
                 $errpass.addClass('hidden');
             }
         });
+
     })
     </script>
 {% endblock %}

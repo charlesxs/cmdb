@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block navbar %}
+    <li>用户管理</li>
+    <li class="active">用户详情</li>
+{% endblock %}
+
+{% block content %}
+    <div class="content content-padding">
+        <div class="content-header">
+            <h3 style="text-indent: 20px;">用户详情</h3>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-1">
+            <table class="table table-responsive">
+                <tr>
+                    <th>用户名:</th>
+                    <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <th>姓名:</th>
+                    <td>{{ user.realname }}</td>
+                </tr>
+                <tr>
+                    <th>邮箱:</th>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <th>电话:</th>
+                    <td>{{ user.mobile | default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>所属用户组:</th>
+                    <td>{{ user | fetch_groups_name | join:"、" }}</td>
+                </tr>
+                <tr></tr>
+
+            </table>
+        </div>
+
+        <div class="col-sm-3 col-sm-offset-1">
+            <table class="table table-responsive">
+                <tr>
+                    <th style="color: #d68b6b;">所授权资产:</th>
+                </tr>
+                {% for asset in assets %}
+                <tr>
+                    <th>{{ asset.asset_type.name }}:</th>
+                    {% if asset.asset_type.name in servers %}
+                    <td><a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}">{{ asset.server.lan_ip }}</a></td>
+                    {% else %}
+                    <td><a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}">{{ asset.networkdevice.name }}</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+{% endblock %}

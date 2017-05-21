@@ -64,13 +64,13 @@
 
                         {% if user.username == 'admin' %}
                         <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>
                             <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
                         </td>
                         {% else %}
                          <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>
                             <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>

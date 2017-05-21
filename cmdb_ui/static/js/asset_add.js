@@ -28,7 +28,7 @@ function checkNull($required, $server, $networkdevice) {
                 }
 
                 if (!$(obj).val()) {
-                    selector = 'span[bind_name=' + obj.name + ']';
+                    selector = 'span[bind_name={}]'.format(obj.name);
                     $(selector).removeClass('hidden');
                     submit = false;
                     return false;
@@ -39,7 +39,7 @@ function checkNull($required, $server, $networkdevice) {
                     return true;
                 }
                 if (!$(obj).val()){
-                    selector = 'span[bind_name=' + obj.name + ']';
+                    selector = 'span[bind_name={}]'.format(obj.name);
                     $(selector).removeClass('hidden');
                     submit = false;
                     return false;
@@ -47,7 +47,7 @@ function checkNull($required, $server, $networkdevice) {
                 break;
             default:
                 if (!$(obj).val()){
-                    selector = 'span[bind_name=' + obj.name + ']';
+                    selector = 'span[bind_name={}]'.format(obj.name);
                     $(selector).removeClass('hidden');
                     submit = false;
                     return false;

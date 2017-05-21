@@ -62,13 +62,13 @@
 
                         {% if ug.groupname == '管理员组' %}
                         <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:usergroup_detail' usergroup_id=ug.id %}" class="btn btn-xs btn-success">详情</a>
                             <a href="#" class="btn btn-xs btn-info" disabled>编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
                         </td>
                         {% else %}
                          <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:usergroup_detail' usergroup_id=ug.id %}" class="btn btn-xs btn-success">详情</a>
                             <a href="{% url 'cmdb_ui:usergroup_edit' usergroup_id=ug.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>

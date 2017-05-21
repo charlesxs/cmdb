@@ -3,6 +3,16 @@
  */
 
 
+String.prototype.format = function() {
+    var pat = /{.*?}/;
+    var newstr = this;
+    for (var i=0; i<arguments.length; i++) {
+        newstr = newstr.replace(pat, arguments[i]);
+    }
+    return newstr;
+};
+
+
 var MenuManager = {
     setActiveMenu: function (v) {
         localStorage.setItem('activePage', v);

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block link-css %}
-    <link rel="stylesheet" href="{% static 'css/asset_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
 {% endblock %}
 
 {% block navbar %}
@@ -27,7 +27,6 @@
                     <th>资产类型</th>
                     <td>{{ asset.asset_type.name }}</td>
                 </tr>
-{#                {% if asset.asset_type.name == '服务器' or asset.asset_type.name == '虚拟机' or asset.asset_type.name == '云主机' %}#}
                 {% if asset.asset_type.name in servers %}
                 <tr>
                     <th>主机名</th>
