@@ -80,10 +80,6 @@ function DeleteItem(id, $objs) {
 
 
 (function () {
-    // 渲染表格背景色
-    $('tr:even').addClass('eventcolor');
-    $('tr:odd').addClass('oddcolor');
-
     //给当前分页按钮着色
     var current = PageRecoder.get_page_num();
     PageRecoder.pages.each(function (i) {
@@ -105,13 +101,6 @@ $(function(){
     var $checkall = $('#checkall');
     var $table = $('.table');
     var $mymodal = $('#alert-modal-sm');
-
-    // 鼠标滑过表格时着色
-    $('tr').mouseover(function () {
-        $(this).addClass('movecolor');
-    }).mouseout(function () {
-        $(this).removeClass('movecolor');
-    });
 
     //搜索
     $('#search-input').keydown(function (event) {
@@ -138,7 +127,7 @@ $(function(){
         if (checkbox.checked === false) {
             $checkall[0].checked = false;
         }
-    }).on('click', 'tr button', function (e) {
+    }).on('click', '.btn-danger', function (e) {
         var $pattr = $(e.target).parents('tr');
         var data_id = $pattr.attr('data-id');
         $mymodal.data('delete-id', data_id).data('delete-obj',
@@ -160,7 +149,7 @@ $(function(){
         $mymodal.data('delete-id', del_ids).data('delete-obj', $(del_objs)).modal();
     });
 
-     // 出发模态框click, 删除所选资产
+     // 触发模态框click, 删除所选资产
     $('#btn-modal-yes').on('click', function () {
         $mymodal.modal('hide');
         DeleteItem($mymodal.data('delete-id'), $mymodal.data('delete-obj'));

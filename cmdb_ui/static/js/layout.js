@@ -13,31 +13,54 @@ String.prototype.format = function() {
 };
 
 
-var MenuManager = {
+var MenuRecoder = {
     setActiveMenu: function (v) {
         localStorage.setItem('activePage', v);
     },
     getActiveMenu: function () {
         var text = localStorage.getItem('activePage');
-        var that = null;
+        var $that = null;
 
         $('.parentMenu').each(function () {
             if ($(this).text().trim() === text) {
-                that = $(this);
+                $that = $(this);
                 return false;
             }
         });
-        return that;
+        return $that;
+    }
+};
+
+
+var MenuManager = {
+    active: function ($menu) {
+        // 设置 active 属性
+        $menu.attr('active', 'active');
+
+        // 将 加号 换成 减号
+        $menu.children('.fa')
+            .removeClass('fa-plus')
+            .addClass('fa-minus');
+    },
+
+    unactive: function ($menu) {
+        // 去除 active 属性
+        $menu.removeAttr('active');
+
+        // 将减号替换成加号
+        $menu.children('.fa')
+            .removeClass('fa-minus')
+            .addClass('fa-plus');
     }
 };
 
 
 // 自动展开 active 菜单
 (function () {
-    var activeMenu = MenuManager.getActiveMenu();
-    if (activeMenu) {
-        activeMenu.siblings('.submenu').removeClass('hide');
-        activeMenu.attr('active', 'active').removeAttr('display');
+    var $activeMenu = MenuRecoder.getActiveMenu();
+    if ($activeMenu) {
+        $activeMenu.siblings('.submenu').removeClass('hide').removeAttr('display');
+        MenuManager.active($activeMenu);
     }
 })();
 
@@ -49,18 +72,15 @@ $(function() {
         var $parentmenu = $(this);
         var $submenu = $parentmenu.siblings('.submenu');
         var $activemenu = $('.parentMenu[active="active"]');
-        // var $navbar = $('#navbar');
         var speed = 'fast';
 
         $submenu.slideToggle(speed, function () {
             if ($parentmenu.attr('active')) {
-                $parentmenu.removeAttr('active');
-
-                MenuManager.setActiveMenu(null);
+                MenuManager.unactive($parentmenu);
+                MenuRecoder.setActiveMenu(null);
             } else {
-                $parentmenu.attr('active', 'active');
-
-                MenuManager.setActiveMenu(
+                MenuManager.active($parentmenu);
+                MenuRecoder.setActiveMenu(
                     $parentmenu.text().trim()
                 );
             }
@@ -68,8 +88,8 @@ $(function() {
 
         //检查其他菜单，如果有是active的，就关闭菜单.
         if (!$parentmenu.is($activemenu)) {
+            MenuManager.unactive($activemenu);
             $activemenu.siblings('.submenu').slideUp(speed);
-            $activemenu.removeAttr('active');
         }
     });
 
@@ -92,6 +112,10 @@ $(function() {
         });
     });
 
+    // logout 时去除活动菜单记录
+    $('#logout').on('click', function () {
+        MenuRecoder.setActiveMenu(null);
+    })
 });
 
 

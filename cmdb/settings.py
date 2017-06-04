@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cmdb',
     'cmdb_api',
     'cmdb_ui',
-    'cmdb',
     'bootstrapform'
 ]
 
@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'cmdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cmdb',
+        'NAME': 'cmdb2',
         'USER': 'cmdb',
         'PASSWORD': 'cmdb',
         'HOST': '127.0.0.1',

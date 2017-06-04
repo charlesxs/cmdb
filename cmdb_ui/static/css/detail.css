@@ -1,3 +1,38 @@
-th {
-    color: #1ab394;
+.table[info="base-info"] th {
+    text-align: right;
+}
+
+.info {
+    height: 50px;
+    border-bottom: 1px #DBDBDB solid;
+}
+
+.info-block {
+    float: left;
+    border-top: 1px #DBDBDB solid;
+    border-right: 1px #DBDBDB solid;
+
+    height: 50px;
+    width: 130px;
+
+    text-align: center;
+    padding-top: 15px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.info-block:hover {
+    background: #f0f0f0;
+}
+
+.info-block-selected {
+    border-bottom: 1px #fefffa solid;
+    background: #ffffff;
+}
+
+.table-content {
+    margin: 20px 2% 2% 2%;
 }

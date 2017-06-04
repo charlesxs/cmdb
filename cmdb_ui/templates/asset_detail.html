@@ -17,127 +17,278 @@
             <h3 style="text-indent: 20px;">资产详情</h3>
         </div>
 
-        <div class="col-sm-4 col-sm-offset-1">
-            <table class="table-responsive table">
-                <tr>
-                    <th>资产序列号</th>
-                    <td>{{ asset.serialnum }}</td>
-                </tr>
-                <tr>
-                    <th>资产类型</th>
-                    <td>{{ asset.asset_type.name }}</td>
-                </tr>
-                {% if asset.asset_type.name in servers %}
-                <tr>
-                    <th>主机名</th>
-                    <td>{{ asset.server.hostname }}</td>
-                </tr>
-                <tr>
-                    <th>内网IP</th>
-                    <td>{{ asset.server.lan_ip }}</td>
-                </tr>
-                <tr>
-                    <th>外网IP</th>
-                    <td>{{ assest.server.wan_ip |default_if_none:"nothing" }}</td>
-                </tr>
-                <tr>
-                    <th>CPU</th>
-                    <td>{{ asset.server.cpu }}</td>
-                </tr>
-                <tr>
-                    <th>内存</th>
-                    <td>{{ asset.server.memory }}</td>
-                </tr>
-                <tr>
-                    <th>磁盘</th>
-                    <td>{{ asset.server.disk }}</td>
-                </tr>
-                <tr>
-                    <th>操作系统</th>
-                    <td>{{ asset.server.os }}</td>
-                </tr>
-                <tr>
-                    <th>宿主机IP</th>
-                    <td>{{ asset.server.phost_ip |default_if_none:"" }}</td>
-                </tr>
-                <tr>
-                    <th>供应商</th>
-                    <td>{{ asset.srever.vendor |default_if_none:"" }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <th>设备名/设备型号</th>
-                    <td>{{ asset.networkdevice.name }}</td>
-                </tr>
-                <tr>
-                    <th>供应商</th>
-                    <td>{{ asset.networkdevice.vendor |default_if_none:"" }}</td>
-                </tr>
-                {% endif %}
-                <tr>
-                    <th>所属机房</th>
-                    <td>{{ asset.idc.name }}</td>
-                </tr>
-                <tr>
-                    <th>机架号</th>
-                    <td>{{ asset.rack_number| default_if_none:"" }}</td>
-                </tr>
-                <tr>
-                    <th>机架U位</th>
-                    <td>{{ asset.rack_position| default_if_none:"" }}</td>
-                </tr>
-                <tr>
-                    <th>所属用户组/项目组</th>
-                    <td>{{ asset | fetch_groups_name | join:" "}}</td>
-                </tr>
-                <tr>
-                    <th>所属资产组</th>
-                    <td>{{ asset.assetgroup.groupname }}</td>
-                </tr>
-                <tr>
-                    <th>创建日期</th>
-                    <td>{{ asset.create_time |date:"Y-m-d H:i:s"}}</td>
-                </tr>
-                <tr>
-                    <th>最近更新日期</th>
-                    <td>{{ asset.update_time |date:"Y-m-d H:i:s" }}</td>
-                </tr>
+        <div class="content-text">
+            <div class="info">
+                <div class="info-block info-block-selected" info="base-info">基本信息</div>
+                <div class="info-block" info="hard-info">硬件信息</div>
+                <div class="info-block" info="change-info">变更记录</div>
+                <div class="clearfix"></div>
+            </div>
 
-                <tr>
-                    <th>备注</th>
-                    {% if asset.asset_type.name in servers %}
-                    <td>{{ asset.server.comment |default_if_none:"" }}</td>
+            <div class="table-content">
+                <table class="table-responsive table table-striped" info="base-info">
+                    <tr>
+                        <th>资产ID:</th>
+                        <td>{{ asset_id }}</td>
+                        <th>资产序列号:</th>
+                        <td>{{ asset.serialnum }}</td>
+                        <th>资产类型:</th>
+                        <td>{{ asset.asset_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>所属IDC:</th>
+                        <td>{{ asset.idc.name }}</td>
+                        <th>机柜号:</th>
+                        <td>{{ asset.cabinet_number |default_if_none:"" }}</td>
+                        <th>机柜U位:</th>
+                        <td>{{ asset.cabinet_position |default_if_none:"" }}</td>
+                    </tr>
+                    <tr>
+                        <th>上线时间:</th>
+                        <td>{{ asset.create_time |date:"Y-m-d H:i:s"}}</td>
+                        <th>业务线:</th>
+                        <td>{{ asset | get_business_line| join:"、" }}</td>
+                        <th>用途:</th>
+                        <td>{{ asset.use }}</td>
+                    </tr>
+                    {% if asset.asset_type in servers %}
+                    <tr>
+                        <th>主机名:</th>
+                        <td>{{ asset.server.hostname }}</td>
+                        <th>内网IP:</th>
+                        <td>{{ asset.server.lan_ip }}</td>
+                        <th>外网IP:</th>
+                        <td>{{ asset.server.wan_ip }}</td>
+                    </tr>
+                    <tr>
+                        <th>CPU:</th>
+                        <td>{{ asset.server.logical_cpu }}</td>
+                        <th>内存:</th>
+                        <td>{{ asset.server.logical_memory }}</td>
+                        <th>磁盘:</th>
+                        <td>{{ asset.server.logical_disk }}</td>
+                    </tr>
+                    <tr>
+                        <th>操作系统:</th>
+                        <td>{{ asset.server.os }}</td>
+                        <th>所属物理机IP:</th>
+                        <td>{{ asset.server.phost_ip |default_if_none:"" }}</td>
+                        <th>联系人微信:</th>
+                        <td>{{ asset.contact.wechat |default_if_none:"" }}</td>
+                    </tr>
                     {% else %}
-                    <td>{{ asset.networkdevice.comment | default_if_none:"" }}</td>
+                    <tr>
+                        <th>设备名</th>
+                        <td>{{ asset.networkdevice.name }}</td>
+                        <th>生产厂商:</th>
+                        <td>{{ asset.networkdevice.manufacturer }}</td>
+                        <th>设备型号:</th>
+                        <td>{{ asset.networkdevice.product_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>IP地址:</th>
+                        <td>{{ asset.networkdevice.ip |default_if_none:""}}</td>
+                        <th>MAC地址:</th>
+                        <td>{{ asset.networkdevice.mac |default_if_none:""}}</td>
+                        <th>联系人微信:</th>
+                        <td>{{ asset.contact.wechat |default_if_none:"" }}</td>
+                    </tr>
                     {% endif %}
-                </tr>
-                <tr>
-                    <th>状态</th>
-                    {% if asset.state == 1 %}
-                    <td>在线</td>
-                    {% else %}
-                    <td>离线</td>
-                    {% endif %}
-                </tr>
-            </table>
-        </div>
+                    <tr>
+                        <th>联系人:</th>
+                        <td>{{ asset.contact.realname }}</td>
+                        <th>手机:</th>
+                        <td>{{ asset.contact.mobile |default_if_none:""}}</td>
+                        <th>邮箱:</th>
+                        <td>{{ asset.contact.email }}</td>
+                    </tr>
 
-        <div class="col-sm-4 col-sm-offset-1">
-            <table class="table table-responsive">
-                <tr>
-                    <th>该资产服役时长: </th>
-                    {% if active_time.days > 365 %}
-                    <td>{{ active_time.days | days_to_years:"years" }} 年 {{ active_time.days | days_to_years:"days" }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
-                    {% else %}
-                    <td>{{ active_time.days }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
-                    {% endif %}
-                </tr>
-            </table>
+                    <tr>
+                        <th>注释:</th>
+                        <td>{{ asset.comment |default_if_none:""}}</td>
+                        <th>状态:</th>
+                        {% if asset.state == 1 %}
+                        <td>在线</td>
+                        {% else %}
+                        <td>下线</td>
+                        {% endif %}
+                        <th>服役时长:</th>
+                        {% if active_time.days > 365 %}
+                        <td>{{ active_time.days | days_to_years:"years" }} 年 {{ active_time.days | days_to_years:"days" }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
+                        {% else %}
+                        <td>{{ active_time.days }} 天 {{ active_time.seconds | seconds_to_hours }} 小时</td>
+                        {% endif %}
+                    </tr>
+                </table>
+
+                <table class="table-responsive table hidden" info="hard-info">
+                    <tr class="success">
+                        <th>硬件系统:</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>序列号</th>
+                        <th>生产厂商</th>
+                        <th>产品型号</th>
+                        <th>UUID</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for hw in hw_system %}
+                    <tr>
+                        <td>{{ hw.serialnum }}</td>
+                        <td>{{ hw.manufacturer }}</td>
+                        <td>{{ hw.product_name }}</td>
+                        <td>{{ hw.uuid }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="success">
+                        <th>网卡信息:</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>名称</th>
+                        <th>MAC地址</th>
+                        <th>IP地址</th>
+                        <th>状态</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for nt in networkinterfaces %}
+                    <tr>
+                        <td>{{ nt.name }}</td>
+                        <td>{{ nt.mac }}</td>
+                        <td>{{ nt.ip }}</td>
+                        {% if nt.state == 1 %}
+                        <td>启用</td>
+                        {% else %}
+                        <td>禁用</td>
+                        {% endif %}
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="success">
+                        <th>内存信息:</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>序列号</th>
+                        <th>part_number</th>
+                        <th>速率</th>
+                        <th>生产厂商</th>
+                        <th>安装位置</th>
+                        <th>大小</th>
+                    </tr>
+                    {% for memory in memorys %}
+                    <tr>
+                        <td>{{ memory.serialnum }}</td>
+                        <td>{{ memory.part_number }}</td>
+                        <td>{{ memory.speed }}</td>
+                        <td>{{ memory.manufacturer }}</td>
+                        <td>{{ memory.locator }}</td>
+                        <td>{{ memory.size }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="success">
+                        <th>CPU信息:</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>socket</th>
+                        <th>family</th>
+                        <th>型号</th>
+                        <th>主频</th>
+                        <th>核心数</th>
+                        <th>特性</th>
+                    </tr>
+                    {% for cpu in cpus %}
+                    <tr>
+                        <td>{{ cpu.socket }}</td>
+                        <td>{{ cpu.family }}</td>
+                        <td>{{ cpu.version }}</td>
+                        <td>{{ cpu.speed }}</td>
+                        <td>{{ cpu.cores }}</td>
+                        <td>{{ cpu.characteristics }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="success">
+                        <th>磁盘信息:</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>序列号</th>
+                        <th>转速</th>
+                        <th>生产厂商</th>
+                        <th>安装位置</th>
+                        <th>接口类型</th>
+                        <th>大小</th>
+                    </tr>
+                    {% for disk in disks %}
+                    <tr>
+                        <td>{{ disk.serialnum }}</td>
+                        <td>{{ disk.speed }}</td>
+                        <td>{{ disk.manufacturer }}</td>
+                        <td>{{ disk.locator }}</td>
+                        <td>{{ disk.interface_type }}</td>
+                        <td>{{ disk.size }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <table class="table-responsive table table-striped hidden" info="change-info">
+                    <tr>
+                        <th>变更时间</th>
+                        <th>变更内容</th>
+                    </tr>
+
+                    {% for h in historys %}
+                    <tr>
+                        <td>{{ h.update_time |date:"Y-m-d H:i:s" }}</td>
+                        {% if h.operate == 'd' %}
+                        <td>{{ h.model }} 删除 {{ h.old }}</td>
+                        {% elif h.operate == 'a' %}
+                        <td>{{ h.model }} 添加 {{ h.new }}</td>
+                        {% else %}
+                        <td>{{ h.field }} 由 {{ h.old }} 变更为 {{ h.new }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+
+                </table>
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <div class="clearfix"></div>
     </div>
 {% endblock %}
 
 
 {% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/detail.js' %}"></script>
 {% endblock %}

@@ -84,7 +84,7 @@ a{
 
 }
 
-#dashboard .dafont{
+#dashboard .dashboard-padding{
     padding-top: 14px;
 }
 
@@ -106,7 +106,7 @@ a{
 }
 
 .coarse-font{
-    font-weight: 600;
+    /*font-weight: 600;*/
     font-size: 14px;
 
     margin-left: 5px;

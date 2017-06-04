@@ -8,7 +8,7 @@
 
 {% block navbar %}
     <li>资产管理</li>
-    <li class="active">查看资产</li>
+    <li class="active">资产列表</li>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
     <!-- 当前页展示 -->
     <div class="content">
         <div class=" content-header">
-            <h3 style="text-indent: 20px;">查看资产</h3>
+            <h3 style="text-indent: 20px;">资产列表</h3>
         </div>
 
         <div class="content-op">
@@ -36,18 +36,21 @@
         </div>
 
         <div class="table-page table-responsive">
-            <table class="table table-bordered" style="margin-bottom: -8px;">
+            <table class="table table-hover table-striped" style="margin-bottom: -8px;">
                 <thead>
                     <tr>
                         <th class="text-center">
                             <input id="checkall" type="checkbox" name="checkall" value="checkall" >
                         </th>
-                        <th>资产编号</th>
                         <th>资产类型</th>
-                        <th>主机名</th>
                         <th>内网IP</th>
-                        <th>所属组</th>
-                        <th>注释</th>
+                        <th>外网IP</th>
+                        <th>业务线</th>
+                        <th>机房</th>
+                        <th>系统</th>
+                        <th>用途</th>
+                        <th>负责人</th>
+                        <th>状态</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -58,24 +61,31 @@
                         <td class="text-center">
                             <input type="checkbox" name="assetid" value="{{ asset.id }}">
                         </td>
-                        <td>{{ asset.serialnum }}</td>
                         <td>{{ asset.asset_type }}</td>
-                        {% if asset.asset_type.name == '路由器' or asset.asset_type.name == '交换机' %}
-                        <td>{{ asset.networkdevice.name }}</td>
-                        <td></td>
-                        <td>{{ asset | fetch_groups_name | join:"、" }}</td>
-                        <td>{{ asset.networkdevice.comment }}</td>
+                        {% if asset.asset_type in servers %}
+                            <td>{{ asset.server.lan_ip }}</td>
+                            <td>{{ asset.server.wan_ip | default_if_none:"" }}</td>
                         {% else %}
-                        <td>{{ asset.server.hostname }}</td>
-                        <td>{{ asset.server.lan_ip }}</td>
-                        <td>{{ asset | fetch_groups_name | join:"、" }}</td>
-                        <td>{{ asset.server.comment |default_if_none:"" }}</td>
+                            <td>{{ asset.networkdevice.ip | default_if_none:"" }}</td>
+                            <td>{{ asset.networkdevice.mac | default_if_none:"" }}</td>
+                        {% endif %}
+                        <td>{{ asset | get_business_line | join:"、" }}</td>
+                        <td>{{ asset.idc.name }}</td>
+                        {% if asset.asset_type in servers %}
+                            <td>{{ asset.server.os }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td>{{ asset.use }}</td>
+                        <td>{{ asset.contact.realname }}</td>
+                        {% if asset.state == 1 %}
+                        <td><button type="button" class="btn btn-xs btn-success">在线</button></td>
+                        {% else %}
+                        <td><button type="button" class="btn btn-xs btn-block">下线</button></td>
                         {% endif %}
                         <td>
-                            <a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}" class="btn btn-xs btn-success">详情</a>
+                            <a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}" class="btn btn-xs btn-primary">详情</a>
                             <a href="{% url 'cmdb_ui:asset_edit' asset_id=asset.id %}" class="btn btn-xs btn-info">编辑</a>
-{#                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal"#}
-{#                                    data-target="#alert-modal-sm">删除</button>#}
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
                     </tr>

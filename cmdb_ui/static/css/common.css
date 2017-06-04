@@ -70,4 +70,12 @@ a.font-logout {
     margin-bottom: 10px;
 }
 
+.content-text {
+    margin: 10px 2% 0 20px;
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    border-color: #DBDBDB;
+}
+
 

@@ -76,8 +76,10 @@ class AssetListMixin(IdNameConvertMixin):
                   Asset.objects.order_by('-id')[:num])
         serials = []
         for asset in assets:
-            if asset.asset_type.name in ['服务器', '云主机', '虚拟机']:
+            if asset.asset_type in ('服务器', '云主机', '虚拟机'):
                 serials.append(ServerAssetCreateUpdateSerializer(instance=asset).data)
             else:
                 serials.append(NetDeviceAssetCreateUpdateSerializer(instance=asset).data)
         return Response([self.id_to_name(data, Asset) for data in serials])
+
+

@@ -5,6 +5,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter(name='get_business_line')
+def get_business_line(obj):
+    return [bs.name for bs in obj.business_line.all()]
+
+
 @register.filter(name='fetch_groups_name')
 def fetch_groups_name(obj):
     return [group.groupname for group in obj.usergroup.all()]
@@ -13,13 +18,6 @@ def fetch_groups_name(obj):
 @register.filter(name='fetch_groups_id')
 def fetch_groups_id(obj):
     return [group.id for group in obj.usergroup.all()]
-
-
-@register.filter(name='to_null')
-def to_null(v):
-    if v is None:
-        return ""
-    return v
 
 
 @register.filter(name="seconds_to_hours")

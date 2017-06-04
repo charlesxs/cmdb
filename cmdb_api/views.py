@@ -7,12 +7,11 @@ from rest_framework.viewsets import ModelViewSet
 # from rest_framework.decorators import detail_route, list_route
 # from rest_framework import mixins, generics
 from rest_framework import status
-from cmdb.models import Asset, AssetGroup, AssetType, UserGroup, IDC, User
+from cmdb.models import Asset, IDC, User, BusinessLine
 from .mixins import IdNameConvertMixin, AssetListMixin
 from .utils import encrypt_pwd
 from .serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
-                          UserSerializer, UserGroupSerializer, AssetGroupSerializer, AssetTypeSerializer,
-                          IDCSerializer, UserListSerializer)
+                          UserSerializer, UserListSerializer, IDCSerializer, BusinessLineSerializer)
 
 
 class AssetListAll(AssetListMixin, APIView):
@@ -51,7 +50,7 @@ class AssetDetail(IdNameConvertMixin, APIView):
 
     def get(self, request, pk):
         asset = self.get_object(pk)
-        if asset.asset_type.name in ['服务器', '虚拟机', '云主机', '容器', 'docker']:
+        if asset.asset_type in ('服务器', '虚拟机', '云主机'):
             serial = ServerAssetCreateUpdateSerializer(asset)
         else:
             serial = NetDeviceAssetCreateUpdateSerializer(asset)
@@ -73,9 +72,13 @@ class AssetDetail(IdNameConvertMixin, APIView):
         return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        asset = self.get_object(pk)
-        asset.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({
+            'code': 403,
+            'reason': 'Can not delete asset, you can mark it as offline'
+        }, status=status.HTTP_403_FORBIDDEN)
+        # asset = self.get_object(pk)
+        # asset.delete()
+        # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserViewSet(IdNameConvertMixin, ModelViewSet):
@@ -115,28 +118,12 @@ class UserViewSet(IdNameConvertMixin, ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class UserGroupViewSet(ModelViewSet):
-    queryset = UserGroup.objects.all()
-    serializer_class = UserGroupSerializer
-
-    def destroy(self, request, *args, **kwargs):
-        if kwargs.get('pk') == '1':
-            return Response({'detail': 'admin group can not be deleted'},
-                            status=status.HTTP_403_FORBIDDEN)
-        return super().destroy(request, *args, **kwargs)
-
-
-class AssetTypeViewSet(ModelViewSet):
-    queryset = AssetType.objects.all()
-    serializer_class = AssetTypeSerializer
-
-
-class AssetGroupViewSet(ModelViewSet):
-    queryset = AssetGroup.objects.all()
-    serializer_class = AssetGroupSerializer
-
-
-class IDCViewSet(ModelViewSet):
+class IDCViewSet(IdNameConvertMixin, ModelViewSet):
     queryset = IDC.objects.all()
     serializer_class = IDCSerializer
+
+
+class BusinessLineViewSet(ModelViewSet):
+    queryset = BusinessLine.objects.all()
+    serializer_class = BusinessLineSerializer
 

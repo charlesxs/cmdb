@@ -14,8 +14,8 @@
     <div class="warp">
     <!-- 顶栏 -->
         <div id="custom-header">
-            <div class="logout">
-                <a class="font-logout" href="{% url 'cmdb_ui:logout' %}">[ 登出 ]</a>
+            <div class="logout" id="logout">
+                <a class="font-logout" href="{% url 'cmdb_ui:logout' %}">[ 退出 ]</a>
             </div>
              <div class="logout">
                 欢迎使用资产管理系统
@@ -56,21 +56,30 @@
 
                 <!-- dashboard -->
                 <div id="dashboard" class="bgcolor">
-                    <div class="dafont">
-                        <i class="fa fa-tachometer font-icon" aria-hidden="true"></i>
+                    <div class="dashboard-font">
+{#                        <i class="fa fa-tachometer font-icon" aria-hidden="true"></i>#}
+                        <i class="fa fa-home font-icon" aria-hidden="true"></i>
                         <span class="coarse-font"><a href="{% url 'cmdb_ui:index' %}">DashBoard</a></span>
                     </div>
                 </div>
 
-                <!-- 用户管理菜单组 -->
+                <!-- 资产录入菜单组 -->
                  <div class="GroupSpace ">
                      <div class="parentMenu">
-                         <i class="fa fa-user font-icon" aria-hidden="true"></i>
-                         <span class="coarse-font">用户管理</span>
+                         <i class="fa fa-file-text-o font-icon" aria-hidden="true"></i>
+                         <span class="coarse-font">资产录入</span>
+                         <i class="fa fa-plus" style="margin-left: 50px; font-size: 9px;" aria-hidden="true"></i>
                      </div>
                      <ul class="submenu bgcolor hide" >
-                         <li ><a href="{% url 'cmdb_ui:user_list' %}">查看用户</a></li>
-                         <li style="margin-top: 15px;"><a href="{% url 'cmdb_ui:usergroup_list' %}">查看小组</a></li>
+                         <li ><a href="{% url 'cmdb_ui:user_list' %}">
+                             <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                             添加服务器
+                         </a></li>
+
+                         <li style="margin-top: 15px;"><a href="{% url 'cmdb_ui:usergroup_list' %}">
+                             <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                             添加网络设备
+                         </a></li>
                      </ul>
                 </div>
 
@@ -79,23 +88,36 @@
                     <div class="parentMenu">
                         <i class="fa fa-database font-icon" aria-hidden="true"></i>
                         <span class="coarse-font">资产管理</span>
+                        <i class="fa fa-plus" style="margin-left: 50px; font-size: 9px;" aria-hidden="true"></i>
                     </div>
                     <ul class="submenu bgcolor hide">
-                        <li><a href="{% url 'cmdb_ui:assetgroup_list' %}">查看资产组</a></li>
-                        <li style="margin-top: 15px;"><a href="{% url 'cmdb_ui:asset_list' %}">查看资产</a></li>
-                        <li style="margin-top: 15px;"><a href="{% url 'cmdb_ui:idc_list' %}">查看机房</a></li>
+                        <li><a href="{% url 'cmdb_ui:asset_list' %}">
+                            <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                            资产列表
+                        </a></li>
+                        <li style="margin-top: 15px;"><a href="{% url 'cmdb_ui:idc_list' %}">
+                            <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                            机房列表
+                        </a></li>
                     </ul>
                 </div>
 
-                <!-- 授权管理菜单组 -->
+                <!-- 业务管理菜单组 -->
                 <div class="GroupSpace ">
                     <div class="parentMenu">
-                        <i class="fa fa-file-text-o font-icon" aria-hidden="true"></i>
-                        <span class="coarse-font">授权管理</span>
+                        <i class="fa fa-sitemap font-icon" aria-hidden="true"></i>
+                        <span class="coarse-font">业务管理</span>
+                         <i class="fa fa-plus" style="margin-left: 50px; font-size: 9px;" aria-hidden="true"></i>
                     </div>
                     <ul class="submenu bgcolor hide">
-                        <li><a href="#">用户授权</a></li>
-                        <li style="margin-top: 15px;"><a href="#">用户组授权</a></li>
+                        <li><a href="#">
+                            <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                            用户
+                        </a></li>
+                        <li style="margin-top: 15px;"><a href="#">
+                            <i class="fa fa-bars" style="margin-right: 5px;" aria-hidden="true"></i>
+                            业务线
+                        </a></li>
                     </ul>
                 </div>
             </div>

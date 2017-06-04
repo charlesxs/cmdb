@@ -10,11 +10,11 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 # from django.contrib.auth import authenticate
-from cmdb.models import User, UserGroup, Asset, AssetGroup, IDC, AssetType
+from cmdb.models import User, Asset, IDC, History
 from cmdb_api.utils import encrypt_pwd
 from .utils import require_login, get_username, clean_asset_form_data, pages, clean_form_data
 from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
-                                  AssetGroupSerializer, IDCSerializer, UserSerializer, UserGroupSerializer)
+                                  IDCSerializer, UserSerializer)
 # from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
 from datetime import datetime
 # Create your views here.
@@ -23,20 +23,13 @@ from datetime import datetime
 @ensure_csrf_cookie
 @require_login
 def index(request):
-    # return HttpResponse('welcome ' + request.session['user'])
     username, realname = get_username(request.session['uid'])
-    vtypes = AssetType.objects.filter(Q(name='虚拟机') | Q(name='云主机'))
-    ptypes = AssetType.objects.filter(Q(name='物理机') | Q(name='服务器'))
-    vids, pids = [vt.id for vt in vtypes], [pt.id for pt in ptypes]
 
     user_number = User.objects.count()
-    usergroup_number = UserGroup.objects.count()
-
     assets_number = Asset.objects.count()
-    vhosts_number = Asset.objects.filter(asset_type__id__in=vids).count()
-    phosts_number = Asset.objects.filter(asset_type_id__in=pids).count()
+    vhosts_number = Asset.objects.filter(Q(asset_type='虚拟机') | Q(asset_type='云主机')).count()
+    phosts_number = Asset.objects.filter(asset_type='服务器').count()
 
-    hostgroup_number = AssetGroup.objects.count()
     idc_number = IDC.objects.count()
 
     if username and realname:
@@ -108,10 +101,10 @@ def asset_list(request, page_num):
 @require_login
 def asset_add(request):
     username, realname = get_username(request.session['uid'])
-    asset_types = AssetType.objects.order_by('id')
+    # asset_types = AssetType.objects.order_by('id')
     idcs = IDC.objects.order_by('id')
-    usergroups = UserGroup.objects.order_by('id')
-    assetgroups = AssetGroup.objects.order_by('id')
+    # usergroups = UserGroup.objects.order_by('id')
+    # assetgroups = AssetGroup.objects.order_by('id')
 
     if request.method == 'POST':
         data, errors = clean_asset_form_data(request, Asset)
@@ -183,12 +176,22 @@ def asset_edit(request, asset_id):
 def asset_detail(request, asset_id):
     username, realname = get_username(request.session['uid'])
     servers = ('服务器', '云主机', '虚拟机')
+    networkinterfaces, memorys = [], []
+    cpus, disks, hw_system = [], [], []
 
     try:
         pk = int(asset_id)
         asset = Asset.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         raise Http404
+
+    historys = History.objects.filter(asset=asset).order_by('-id')
+    if asset.asset_type in servers:
+        networkinterfaces = asset.server.networkinterface.all()
+        memorys = asset.server.memory.all()
+        cpus = asset.server.cpu.all()
+        disks = asset.server.disk.all()
+        hw_system = asset.server.hw_system.all()
 
     if asset.state == 1:
         active_time = datetime.now(asset.create_time.tzinfo) - asset.create_time

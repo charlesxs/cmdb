@@ -38,8 +38,6 @@
                 <div class="gray-font font-indent small-font">All Physical Hosts</div>
             </div>
         </div>
-        <div class="hide" id="usergroupnumber">{{ usergroup_number }}</div>
-        <div class="hide" id="hostgroupnumber">{{ hostgroup_number }}</div>
         <div class="hide" id="idcnumber">{{ idc_number }}</div>
 
 {#        <div id="container" style="height:400px; margin-left:44%; margin-right:6%; margin-top:30px;"></div>#}
@@ -67,9 +65,7 @@
                 xAxis: {
                     categories: [
                         '用户总数',
-                        '用户组总数',
                         '资产总数',
-                        '资产组总数',
                         '虚拟机总数',
                         '物理机总数',
                         'IDC数量'
@@ -98,9 +94,7 @@
                 series: [{
                     name: 'Population',
                     data: [parseInt($('#usernumber').text()),
-                           parseInt($('#usergroupnumber').text()),
                            parseInt($('#assets_number').text()),
-                           parseInt($('#hostgroupnumber').text()),
                            parseInt($('#vhostsnumber').text()),
                            parseInt($('#phostsnumber').text()),
                            parseInt($('#idcnumber').text())
