@@ -1,0 +1,450 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load bootstrap %}
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/add.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+    <li>资产管理</li>
+    <li class="active">添加服务器设备</li>
+{% endblock %}
+
+{% block content %}
+    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">资产添加失败: {{ errors }}</div>
+    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">资产添加成功 ! !</div>
+    <!-- 当前页展示 -->
+    <div class="content content-padding">
+        <div class="content-header">
+            <h3 style="text-indent: 20px;">添加服务器设备</h3>
+        </div>
+
+        <div class="content-text">
+            <div class="info">
+                <div class="info-block info-block-selected" info="base-info">基本信息</div>
+                <div class="info-block" info="hard-info">硬件信息</div>
+            </div>
+
+            <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_add_server' %}" method="POST">
+                {% csrf_token %}
+                <div id="server" info="base-info" class="none-class">
+                    <div class="form-group">
+                        <label for="serialnum" class="col-sm-2 control-label">资产序列号</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="serialnum" name="serialnum" aria-required="true">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="serialnum">该字段不能为空!</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="asset_type_select" class="col-sm-2 control-label">资产类型</label>
+                        <div class="col-sm-6">
+                            <select name="asset_type" id="asset_type_select" class="form-control">
+                                <option value="服务器">服务器</option>
+                                <option value="虚拟机">虚拟机</option>
+                                <option value="云主机">云主机</option>
+                            </select>
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="asset_type">该字段不能为空!</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idc_select" class="col-sm-2 control-label">机房</label>
+                        <div class="col-sm-6">
+                            <select id="idc_select" name="idc" class="form-control">
+                                {% for idc in idcs %}
+                                <option value="{{ idc.id }}">{{ idc.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="idc">该字段不能为空!</span>
+                   </div>
+
+                    <div class="form-group">
+                        <label for="cabinet_number" class="col-sm-2 control-label">机柜号</label>
+                        <div class="col-sm-6">
+                            <input type="number" name="rack_number" class="form-control" id="cabinet_number" placeholder="输入必须为数字">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cabinet_position" class="col-sm-2 control-label">机柜U位</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="cabinet_position" id="rack_position" placeholder="输入必须为数字">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact" class="col-sm-2 control-label">负责人</label>
+                        <div class="col-sm-6">
+                            <select id="contact_select" name="contact" class="form-control">
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.realname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="business_line" class="col-sm-2 control-label">业务线</label>
+                        <div class="col-sm-6">
+                            <select id="business_line_select" name="business_line" multiple class="form-control">
+                                {% for bn in business_line %}
+                                <option value="{{ bn.id }}">{{ bn.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- server info -->
+                    <div class="form-group">
+                        <label for="hostname" class="col-sm-2 control-label">主机名</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-hostname" id="hostname" aria-required="true">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-hostname">该字段不能为空!</span>
+                   </div>
+
+                    <div class="form-group">
+                        <label for="lan_ip" class="col-sm-2 control-label">内网IP</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-lan_ip" id="lan_ip" aria-required="true">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-lan_ip">该字段不能为空!</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wan_ip" class="col-sm-2 control-label">外网IP</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-wan_ip" id="wan_ip">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="logical_cpu" class="col-sm-2 control-label">CPU</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-logical_cpu" id="logical_cpu" aria-required="true" placeholder="系统层面的cpu信息">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-logical_cpu">该字段不能为空!</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="logical_memory" class="col-sm-2 control-label">内存</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-logical_memory" id="logical_memory" aria-required="true" placeholder="内存大小">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-logical_memory">该字段不能为空!</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="logical_disk" class="col-sm-2 control-label">磁盘</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-logical_disk" id="logical_disk" aria-required="true" placeholder="硬盘大小">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-logical_disk">该字段不能为空!</span>
+                   </div>
+                    <div class="form-group">
+                        <label for="os" class="col-sm-2 control-label">操作系统</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-os" id="os" aria-required="true">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-os">该字段不能为空!</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="phost_ip" class="col-sm-2 control-label">宿主机IP</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="server-phost_ip" id="phost_ip">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use" class="col-sm-2 control-label">用途</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="use" id="use">
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="use">该字段不能为空!</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment" class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="comment" id="comment">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="state" class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-6">
+                            <select id="state" name="state" class="form-control">
+                                <option value="1">在线</option>
+                                <option value="0">下线</option>
+                            </select>
+                        </div>
+                        <span style="color: red; font-size: 20px;">*</span>
+                        <span class="alert alert-danger tip-window hidden" role="alert" bind_name="state">该字段不能为空!</span>
+                   </div>
+                </div>
+
+                <!-- hardware info -->
+                <div id="hard" info="hard-info" class="hidden none-class">
+                    <div id="hw_system">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">硬件系统</legend>
+                            <div class="form-group">
+                                <label for="hw_system-h1-serialnum" class="col-sm-2 control-label">序列号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="hw_system-h1-serialnum">
+                                </div>
+                            </div>
+
+                             <div class="form-group">
+                                <label for="hw_system-h1-manufacturer" class="col-sm-2 control-label">生产厂商</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="hw_system-h1-manufacturer">
+                                </div>
+                            </div>
+
+                             <div class="form-group">
+                                <label for="hw_system-h1-product_name" class="col-sm-2 control-label">产品型号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="hw_system-h1-product_name">
+                                </div>
+                            </div>
+
+                             <div class="form-group">
+                                <label for="hw_system-h1-uuid" class="col-sm-2 control-label">UUID</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="hw_system-h1-uuid">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div id="networkinterface">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">网卡信息</legend>
+                            <button type="button" class="btn-primary btn add-info" add="add">+ 添加网卡</button>
+                            <div class="clearfix"></div>
+                            <fieldset class="scheduler-border" id="n1" n="n">
+                                <legend class="scheduler-border">网卡1</legend>
+                                <button type="button" class="btn btn-xs add-info hidden">- 删除</button>
+                                <div class="form-group">
+                                    <label for="networkinterface-n1-name" class="col-sm-2 control-label">网卡名</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="networkinterface-n1-name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="networkinterface-n1-mac" class="col-sm-2 control-label">MAC地址</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="networkinterface-n1-mac">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="networkinterface-n1-ip" class="col-sm-2 control-label">IP地址</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="networkinterface-n1-ip">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="networkinterface-n1-state" class="col-sm-2 control-label">状态</label>
+                                    <div class="col-sm-6">
+                                        <select name="networkinterface-n1-state" class="form-control">
+                                            <option value="1">启用</option>
+                                            <option value="0">禁用</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+
+                   <div id="memory">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">内存信息</legend>
+                            <button type="button" class="btn-primary btn add-info" add="add">+ 添加内存</button>
+                            <div class="clearfix"></div>
+                            <fieldset class="scheduler-border" id="m1" m="m">
+                                <legend class="scheduler-border">内存1</legend>
+                                <button type="button" class="btn btn-xs add-info hidden">- 删除</button>
+                                <div class="form-group">
+                                    <label for="memory-m1-serialnum" class="col-sm-2 control-label">序列号</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-serialnum">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="memory-m1-part_number" class="col-sm-2 control-label">Part_Number</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-part_number">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="memory-m1-speed" class="col-sm-2 control-label">速率</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-speed">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="memory-m1-manufacturer" class="col-sm-2 control-label">生产厂商</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-manufacturer">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="memory-m1-locator" class="col-sm-2 control-label">安装位置</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-locator">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="memory-m1-size" class="col-sm-2 control-label">大小</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="memory-m1-size">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+
+                   <div id="cpu">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">CPU信息</legend>
+                            <button type="button" class="btn-primary btn add-info" add="add">+ 添加CPU</button>
+                            <div class="clearfix"></div>
+                            <fieldset class="scheduler-border" id="c1" c="c">
+                                <legend class="scheduler-border">CPU1</legend>
+                                <button type="button" class="btn btn-xs add-info hidden">- 删除</button>
+                                <div class="form-group">
+                                    <label for="cpu-c1-socket" class="col-sm-2 control-label">Socket</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-socket" placeholder="安装的第几颗CPU">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cpu-c1-family" class="col-sm-2 control-label">family</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-family" placeholder="家族">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cpu-c1-version" class="col-sm-2 control-label">版本</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-version">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cpu-c1-speed" class="col-sm-2 control-label">主频</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-speed">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cpu-c1-cores" class="col-sm-2 control-label">核心数</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-cores">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cpu-c1-characteristics" class="col-sm-2 control-label">特性</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="cpu-c1-characteristics" placeholder="64位还是32位">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+
+                   <div id="disk">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">磁盘信息</legend>
+                            <button type="button" class="btn-primary btn add-info" add="add">+ 添加磁盘</button>
+                            <div class="clearfix"></div>
+                            <fieldset class="scheduler-border" id="d1" d="d">
+                                <legend class="scheduler-border">磁盘1</legend>
+                                <button type="button" class="btn btn-xs add-info hidden">- 删除</button>
+                                <div class="form-group">
+                                    <label for="disk-d1-serialnum" class="col-sm-2 control-label">序列号</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-serialnum">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="disk-d1-size" class="col-sm-2 control-label">大小</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-size">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="disk-d1-speed" class="col-sm-2 control-label">转速</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-speed">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="disk-d1-manufacturer" class="col-sm-2 control-label">生产厂商</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-manufacturer">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="disk-d1-locator" class="col-sm-2 control-label">安装位置</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-locator">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="disk-d1-interface_type" class="col-sm-2 control-label">接口类型</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="disk-d1-interface_type">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-6">
+                        <button type="button" id="submit_button" class="btn btn-sm btn-success form-control">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/server_add.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/detail.js' %}"></script>
+{% endblock %}

@@ -21,7 +21,7 @@
         </div>
 
         <div class="content-op">
-            <a href="{% url 'cmdb_ui:asset_add' %}" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
+            <a href="{% url 'cmdb_ui:asset_add_server' %}" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
 {#            <a href="#" class="btn btn-danger btn-sm btn-asset-position">删除所选</a>#}
             <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
@@ -57,7 +57,11 @@
 
                 <tbody>
                     {% for asset in assets %}
+                    {% if asset.state == 0 %}
+                    <tr data-id="{{ asset.id }}" class="item-offline">
+                    {% else %}
                     <tr data-id="{{ asset.id }}">
+                    {% endif %}
                         <td class="text-center">
                             <input type="checkbox" name="assetid" value="{{ asset.id }}">
                         </td>
@@ -81,7 +85,7 @@
                         {% if asset.state == 1 %}
                         <td><button type="button" class="btn btn-xs btn-success">在线</button></td>
                         {% else %}
-                        <td><button type="button" class="btn btn-xs btn-block">下线</button></td>
+                        <td><button type="button" class="btn btn-xs btn-default btn-gray">下线</button></td>
                         {% endif %}
                         <td>
                             <a href="{% url 'cmdb_ui:asset_detail' asset_id=asset.id %}" class="btn btn-xs btn-primary">详情</a>

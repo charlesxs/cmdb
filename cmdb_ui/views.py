@@ -10,9 +10,9 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 # from django.contrib.auth import authenticate
-from cmdb.models import User, Asset, IDC, History
+from cmdb.models import User, Asset, IDC, History, BusinessLine
 from cmdb_api.utils import encrypt_pwd
-from .utils import require_login, get_username, clean_asset_form_data, pages, clean_form_data
+from .utils import require_login, get_username, clean_server_form_data, pages, clean_form_data
 from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
                                   IDCSerializer, UserSerializer)
 # from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
@@ -99,34 +99,29 @@ def asset_list(request, page_num):
 
 
 @require_login
-def asset_add(request):
+def asset_add_server(request):
     username, realname = get_username(request.session['uid'])
-    # asset_types = AssetType.objects.order_by('id')
     idcs = IDC.objects.order_by('id')
-    # usergroups = UserGroup.objects.order_by('id')
-    # assetgroups = AssetGroup.objects.order_by('id')
+    users = User.objects.order_by('id')
+    business_line = BusinessLine.objects.order_by('id')
 
     if request.method == 'POST':
-        data, errors = clean_asset_form_data(request, Asset)
+        data, errors = clean_server_form_data(request, Asset)
         if errors is not None:
             hidden_success = 'hidden'
-            return render(request, 'asset_add.html', locals())
+            return render(request, 'asset_add_server.html', locals())
 
-        if data['route'] == 'server':
-            [data.pop(k) for k in ['networkdevice', 'route', 'csrfmiddlewaretoken']]
-            serial = ServerAssetCreateUpdateSerializer(data=data)
-        else:
-            [data.pop(k) for k in ['server', 'route', 'csrfmiddlewaretoken']]
-            serial = NetDeviceAssetCreateUpdateSerializer(data=data)
+        data.pop('csrfmiddlewaretoken')
+        serial = ServerAssetCreateUpdateSerializer(data=data)
         if serial.is_valid():
             serial.save()
             hidden_failed = 'hidden'
-            return render(request, 'asset_add.html', locals())
+            return render(request, 'asset_add_server.html', locals())
         hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'asset_add.html', locals())
+        return render(request, 'asset_add_server.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
-    return render(request, 'asset_add.html', locals())
+    return render(request, 'asset_add_server.html', locals())
 
 
 @require_login

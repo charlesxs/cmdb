@@ -15,10 +15,10 @@ String.prototype.format = function() {
 
 var MenuRecoder = {
     setActiveMenu: function (v) {
-        localStorage.setItem('activePage', v);
+        sessionStorage.setItem('activePage', v);
     },
     getActiveMenu: function () {
-        var text = localStorage.getItem('activePage');
+        var text = sessionStorage.getItem('activePage');
         var $that = null;
 
         $('.parentMenu').each(function () {

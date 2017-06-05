@@ -45,3 +45,11 @@ tr.movecolor{
 .offset-left-2{
     padding-left: 2%;
 }
+
+.btn-gray {
+    background-color: #cacaca;
+}
+
+.item-offline{
+    opacity: 0.4;
+}

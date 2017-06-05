@@ -5,8 +5,10 @@ from cmdb_api.mixins import IdNameConvertMixin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from collections import defaultdict
 from urllib.parse import urlencode
 from cmdb.models import User
+from copy import deepcopy
 
 
 def require_login(fn):
@@ -25,28 +27,102 @@ def get_username(id_):
     return None, None
 
 
-def clean_asset_form_data(request, model):
-    usergroup = request.POST.getlist('usergroup[]')
-    usergroup = usergroup if usergroup else [1]
+class CacheServerData:
+    # 设置每个资源的唯一标识 ，后面判断如果唯一标识是None, 则删除这条记录.
+    IdentityMap = {
+        'memory': 'serialnum',
+        'disk': 'locator',
+        'cpu': 'socket',
+        'hw_system': 'serialnum',
+        'networkinterface': 'mac'
+    }
+
+    def __init__(self):
+        self.networkinterface = defaultdict(dict)
+        self.memory = defaultdict(dict)
+        self.cpu = defaultdict(dict)
+        self.disk = defaultdict(dict)
+        self.hw_system = defaultdict(dict)
+
+    def cache_networkinterface(self, identity, k, v):
+        if k == 'state':
+            v = int(v)
+        self.networkinterface[identity].update({k: v})
+
+    def get_networkinterface(self):
+        values = list(self.networkinterface.values())
+        result = deepcopy(values)
+        [result.remove(v) for v in values if v[CacheServerData.IdentityMap['networkinterface']] is None]
+        return result
+
+    def cache_memory(self, identity, k, v):
+        self.memory[identity].update({k: v})
+
+    def get_memory(self):
+        values = list(self.memory.values())
+        result = deepcopy(values)
+        [result.remove(v) for v in values if v[CacheServerData.IdentityMap['memory']] is None]
+        return result
+
+    def cache_cpu(self, identity, k, v):
+        self.cpu[identity].update({k: v})
+
+    def get_cpu(self):
+        values = list(self.cpu.values())
+        result = deepcopy(values)
+        [result.remove(v) for v in values if v[CacheServerData.IdentityMap['cpu']] is None]
+        return result
+
+    def cache_disk(self, identity, k, v):
+        self.disk[identity].update({k: v})
+
+    def get_disk(self):
+        values = list(self.disk.values())
+        result = deepcopy(values)
+        [result.remove(v) for v in values if v[CacheServerData.IdentityMap['disk']] is None]
+        return result
+
+    def cache_hw_system(self, identity, k, v):
+        self.hw_system[identity].update({k: v})
+
+    def get_hw_system(self):
+        values = list(self.hw_system.values())
+        result = deepcopy(values)
+        [result.remove(v) for v in values if v[CacheServerData.IdentityMap['hw_system']] is None]
+        return result
+
+
+def clean_server_form_data(request, model):
+    cache = CacheServerData()
+    business_line = request.POST.getlist('business_line')
+    business_line = business_line if business_line else []
+    print(business_line)
+
     data = {
         'server': {},
-        'networkdevice': {},
-        'usergroup': usergroup
+        'business_line': business_line
     }
 
     for k, v in request.POST.items():
         if k.startswith('server'):
             data['server'][k.split('-')[-1]] = v if v else None
-        elif k.startswith('networkdevice'):
-            data['networkdevice'][k.split('-')[-1]] = v if v else None
-        elif k == 'comment':
-            data[request.POST['route']][k] = v if v else None
-        else:
+        elif (k.startswith('networkinterface') or k.startswith('memory') or
+              k.startswith('cpu') or k.startswith('hw_system') or k.startswith('disk')):
+            _type, identity, field_name = k.split('-')
+            getattr(cache, 'cache_{0}'.format(_type))(identity, field_name, v if v else None)
+        elif k != 'business_line':
             data[k] = v if v else None
+
     try:
         data = IdNameConvertMixin().to_id(data, model)
-    except ValueError as e:
+        data['server']['networkinterface'] = cache.get_networkinterface()
+        data['server']['cpu'] = cache.get_cpu()
+        data['server']['memory'] = cache.get_memory()
+        data['server']['hw_system'] = cache.get_hw_system()
+        data['server']['disk'] = cache.get_disk()
+    except (ValueError, TypeError) as e:
         return data, str(e)
+    print(data)
     return data, None
 
 

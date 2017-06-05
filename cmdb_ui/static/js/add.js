@@ -35,6 +35,7 @@ $(function () {
     var $form = $('form');
     var $required = $('input[aria-required="true"]');
 
+    // 检查必填项 并提交
     $submit_button.on('click', function () {
         if (checkNull($required)) {
             $form.submit();
@@ -42,10 +43,11 @@ $(function () {
     });
 
     $required.on('focus', function () {
-        var selector = 'span[bind_name=' + this.name + ']';
+        // var selector = 'span[bind_name=' + this.name + ']';
+        var selector = 'span[bind_name="{0}"]'.format(this.name);
         if (!$(selector).hasClass('hidden')) {
             $(selector).addClass('hidden');
         }
-    })
+    });
 });
 
