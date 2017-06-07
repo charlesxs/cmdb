@@ -8,13 +8,10 @@ urlpatterns = [
     url(r'^logout/$', logout, name='logout'),
     url(r'^asset_list/(?P<page_num>[0-9]+)?/?$', asset_list, name='asset_list'),
     url(r'^asset_add_server/$', asset_add_server, name='asset_add_server'),
-    url(r'^asset_edit/(?P<asset_id>[0-9]+)/$', asset_edit, name='asset_edit'),
+    url(r'^asset_add_networkdevice/$', asset_add_networkdevice, name='asset_add_networkdevice'),
+    url(r'^asset_edit_server/(?P<asset_id>[0-9]+)/$', asset_edit_server, name='asset_edit_server'),
+    url(r'^asset_edit_networkdevice/(?P<asset_id>[0-9]+)/$', asset_edit_networkdevice, name='asset_edit_networkdevice'),
     url(r'^asset_detail/(?P<asset_id>[0-9]+)/$', asset_detail, name='asset_detail'),
-
-    url(r'^assetgroup_list/(?P<page_num>[0-9]+)?/?$', assetgroup_list, name='assetgroup_list'),
-    url(r'^assetgroup_add/$', assetgroup_add, name='assetgroup_add'),
-    url(r'^assetgroup_edit/(?P<assetgroup_id>[0-9]+)/$', assetgroup_edit, name='assetgroup_edit'),
-    url(r'^assetgroup_detail/(?P<assetgroup_id>[0-9]+)/$', assetgroup_detail, name='assetgroup_detail'),
 
     url(r'^idc_list/(?P<page_num>[0-9]+)?/?$', idc_list, name='idc_list'),
     url(r'^idc_add/$', idc_add, name='idc_add'),

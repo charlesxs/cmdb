@@ -14,14 +14,15 @@
     }
 })();
 
+
 function checkNull($required) {
     var submit = true;
     var selector = null;
 
     $required.each(function (index, obj) {
         if (!$(obj).val()){
-            selector = 'span[bind_name=' + obj.name + ']';
-            $(selector).removeClass('hidden');
+            selector = 'span[bind_name="{0}"]'.format(obj.name);
+            $(selector).removeClass('hidden').removeAttr('style');
             submit = false;
             return false;
         }
@@ -43,7 +44,6 @@ $(function () {
     });
 
     $required.on('focus', function () {
-        // var selector = 'span[bind_name=' + this.name + ']';
         var selector = 'span[bind_name="{0}"]'.format(this.name);
         if (!$(selector).hasClass('hidden')) {
             $(selector).addClass('hidden');

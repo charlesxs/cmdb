@@ -116,7 +116,7 @@ class CPU(models.Model):
                                help_text='具体的CPU版本,型号. 如: Intel(R) Xeon(R) CPU E5606 @ 2.13GHz')
     speed = models.CharField(max_length=50, help_text='CPU 速率')
     cores = models.SmallIntegerField(help_text='cpu 核心数')
-    characteristics = models.CharField(max_length=20, help_text='主要记录CPU位数, 32位 or 64位')
+    characteristics = models.CharField(max_length=200, help_text='主要记录CPU位数, 32位 or 64位')
     server = models.ForeignKey(Server, on_delete=models.CASCADE, related_name='cpu')
 
     def __str__(self):

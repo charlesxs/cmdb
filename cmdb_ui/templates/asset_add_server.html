@@ -1,6 +1,5 @@
 {% extends 'layout.html' %}
 {% load static %}
-{% load bootstrap %}
 {% block link-css %}
     <link rel="stylesheet" href="{% static 'css/list.css' %}" />
     <link rel="stylesheet" href="{% static 'css/detail.css' %}">
@@ -68,7 +67,7 @@
                     <div class="form-group">
                         <label for="cabinet_number" class="col-sm-2 control-label">机柜号</label>
                         <div class="col-sm-6">
-                            <input type="number" name="rack_number" class="form-control" id="cabinet_number" placeholder="输入必须为数字">
+                            <input type="number" name="cabinet_number" class="form-control" id="cabinet_number" placeholder="输入必须为数字">
                         </div>
                     </div>
 
@@ -170,7 +169,7 @@
                     <div class="form-group">
                         <label for="use" class="col-sm-2 control-label">用途</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="use" id="use">
+                            <input type="text" class="form-control" name="use" id="use" aria-required="true">
                         </div>
                         <span style="color: red; font-size: 20px;">*</span>
                         <span class="alert alert-danger tip-window hidden" role="alert" bind_name="use">该字段不能为空!</span>

@@ -1,6 +1,5 @@
 {% extends 'layout.html' %}
 {% load static %}
-{% load bootstrap %}
 {% block link-css %}
     <link rel="stylesheet" href="{% static 'css/list.css' %}" />
     <link rel="stylesheet" href="{% static 'css/add.css' %}" />
@@ -8,7 +7,7 @@
 
 {% block navbar %}
     <li>资产管理</li>
-    <li class="active">添加资产</li>
+    <li class="active">添加网络设备</li>
 {% endblock %}
 
 {% block content %}
@@ -17,13 +16,11 @@
     <!-- 当前页展示 -->
     <div class="content content-padding">
         <div class="content-header">
-            <h3 style="text-indent: 20px;">添加资产</h3>
+            <h3 style="text-indent: 20px;">添加网络设备</h3>
         </div>
 
-        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_add' %}" method="POST">
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_add_networkdevice' %}" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="route" id="route" value="server">
-
             <div class="form-group">
                 <label for="serialnum" class="col-sm-2 control-label">资产序列号</label>
                 <div class="col-sm-6">
@@ -37,9 +34,8 @@
                 <label for="asset_type_select" class="col-sm-2 control-label">资产类型</label>
                 <div class="col-sm-6">
                     <select name="asset_type" id="asset_type_select" class="form-control">
-                        {% for atp in asset_types %}
-                        <option value="{{ atp.id }}">{{ atp.name }}</option>
-                        {% endfor %}
+                        <option value="路由器">路由器</option>
+                        <option value="交换机">交换机</option>
                     </select>
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
@@ -60,25 +56,25 @@
            </div>
 
             <div class="form-group">
-                <label for="rack_number" class="col-sm-2 control-label">机柜号</label>
+                <label for="cabinet_number" class="col-sm-2 control-label">机柜号</label>
                 <div class="col-sm-6">
-                    <input type="number" name="rack_number" class="form-control" id="rack_number" placeholder="输入必须为数字">
+                    <input type="number" name="cabinet_number" class="form-control" id="cabinet_number" placeholder="输入必须为数字">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="rack_position" class="col-sm-2 control-label">机柜U位</label>
+                <label for="cabinet_position" class="col-sm-2 control-label">机柜U位</label>
                 <div class="col-sm-6">
-                    <input type="number" class="form-control" name="rack_position" id="rack_position" placeholder="输入必须为数字">
+                    <input type="number" class="form-control" name="cabinet_position" id="cabinet_position" placeholder="输入必须为数字">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="usergroup_select" class="col-sm-2 control-label">用户组/项目组</label>
+                <label for="use_select" class="col-sm-2 control-label">负责人</label>
                 <div class="col-sm-6">
-                    <select id="usergroup_select" name="usergroup[]" multiple class="form-control">
-                        {% for usergroup in usergroups %}
-                        <option value="{{ usergroup.id }}">{{ usergroup.groupname }}</option>
+                    <select id="use_select" name="user" class="form-control">
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.realname }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -86,106 +82,64 @@
             </div>
 
             <div class="form-group">
-                <label for="assetgroup_type_select" class="col-sm-2 control-label">资产组</label>
+                <label for="business_line_select" class="col-sm-2 control-label">业务线</label>
                 <div class="col-sm-6">
-                    <select id="assetgroup_type_select" name="assetgroup" class="form-control">
-                        {% for assetgroup in assetgroups %}
-                        <option value="{{ assetgroup.id }}">{{ assetgroup.groupname }}</option>
+                    <select id="business_line_select" name="business_line" multiple class="form-control">
+                        {% for bn in business_line %}
+                        <option value="{{ bn.id }}">{{ bn.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
 
-            <div id="server">
+            <div id="networkdevice">
                 <div class="form-group">
-                    <label for="hostname" class="col-sm-2 control-label">主机名</label>
+                    <label for="name" class="col-sm-2 control-label">设备名称</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-hostname" id="hostname" aria-required="true">
+                        <input type="text" class="form-control" name="networkdevice-name" id="name" aria-required="true">
                     </div>
                     <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-hostname">该字段不能为空!</span>
+                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="networkdevice-name">该字段不能为空!</span>
                </div>
 
                 <div class="form-group">
-                    <label for="lan_ip" class="col-sm-2 control-label">内网IP</label>
+                    <label for="manufacturer" class="col-sm-2 control-label">生产厂商</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-lan_ip" id="lan_ip" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-lan_ip">该字段不能为空!</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="wan_ip" class="col-sm-2 control-label">外网IP</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-wan_ip" id="wan_ip">
+                        <input type="text" class="form-control" name="networkdevice-manufacturer" id="manufacturer" >
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="vendor" class="col-sm-2 control-label">供应商/机器型号</label>
+                    <label for="product_name" class="col-sm-2 control-label">产品型号</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-vendor" id="vendor">
+                        <input type="text" class="form-control" name="networkdevice-product_name" id="product_name" aria-required="true">
+                    </div>
+                    <span style="color: red; font-size: 20px;">*</span>
+                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="networkdevice-product_name">该字段不能为空!</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="ip" class="col-sm-2 control-label">IP地址</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="networkdevice-ip" id="ip">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="cpu" class="col-sm-2 control-label">CPU</label>
+                    <label for="mac" class="col-sm-2 control-label">MAC地址</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-cpu" id="cpu" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-cpu">该字段不能为空!</span>
-                </div>
-                <div class="form-group">
-                    <label for="memory" class="col-sm-2 control-label">内存</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-memory" id="memory" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-memory">该字段不能为空!</span>
-                </div>
-                <div class="form-group">
-                    <label for="disk" class="col-sm-2 control-label">磁盘</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-disk" id="disk" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-disk">该字段不能为空!</span>
-               </div>
-                <div class="form-group">
-                    <label for="os" class="col-sm-2 control-label">操作系统</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-os" id="os" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
-                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="server-os">该字段不能为空!</span>
-                </div>
-                <div class="form-group">
-                    <label for="phost_ip" class="col-sm-2 control-label">宿主机IP</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="server-phost_ip" id="phost_ip">
+                        <input type="text" class="form-control" name="networkdevice-mac" id="mac">
                     </div>
                 </div>
             </div>
-
-            <div id="networkdevice" class="hidden">
-                <div class="form-group">
-                    <label for="netname" class="col-sm-2 control-label">设备名/设备型号</label>
-                    <div class="col-sm-6">
-                        <input type="text"  class="form-control" name="networkdevice-name" id="netname" aria-required="true">
-                    </div>
-                    <span style="color: red; font-size: 20px;">*</span>
+           <div class="form-group">
+                <label for="use" class="col-sm-2 control-label">用途</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="use" id="use" aria-required="true">
                 </div>
-
-                <div class="form-group">
-                    <label for="netvendor" class="col-sm-2 control-label">供应商</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" name="networkdevice-vendor" id="netvendor">
-                    </div>
-                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="use">该字段不能为空!</span>
             </div>
-
             <div class="form-group">
                 <label for="comment" class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-6">
@@ -197,7 +151,7 @@
                 <div class="col-sm-6">
                     <select id="state" name="state" class="form-control">
                         <option value="1">在线</option>
-                        <option value="0">离线</option>
+                        <option value="0">下线</option>
                     </select>
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
@@ -215,5 +169,5 @@
 {% endblock %}
 
 {% block JavaScripts %}
-    <script type="text/javascript" src="{% static 'js/asset_add.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/add.js' %}"></script>
 {% endblock %}

@@ -96,7 +96,6 @@ def clean_server_form_data(request, model):
     cache = CacheServerData()
     business_line = request.POST.getlist('business_line')
     business_line = business_line if business_line else []
-    print(business_line)
 
     data = {
         'server': {},
@@ -122,7 +121,28 @@ def clean_server_form_data(request, model):
         data['server']['disk'] = cache.get_disk()
     except (ValueError, TypeError) as e:
         return data, str(e)
-    print(data)
+    return data, None
+
+
+def clean_networkdevice_form_data(request, model):
+    business_line = request.POST.getlist('business_line')
+    business_line = business_line if business_line else []
+
+    data = {
+        'networkdevice': {},
+        'business_line': business_line
+    }
+
+    for k, v in request.POST.items():
+        if k.startswith('networkdevice'):
+            data['networkdevice'][k.split('-')[-1]] = v if v else None
+        elif k != 'business_line':
+            data[k] = v if v else None
+
+    try:
+        data = IdNameConvertMixin().to_id(data, model)
+    except (ValueError, TypeError) as e:
+        return data, str(e)
     return data, None
 
 
@@ -135,7 +155,7 @@ def clean_form_data(request, model, multikey=()):
             data[k] = v if v else None
     try:
         data = IdNameConvertMixin().to_id(data, model)
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         return data, str(e)
     return data, None
 

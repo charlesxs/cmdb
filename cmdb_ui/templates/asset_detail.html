@@ -168,8 +168,8 @@
                     {% for nt in networkinterfaces %}
                     <tr>
                         <td>{{ nt.name }}</td>
-                        <td>{{ nt.mac }}</td>
-                        <td>{{ nt.ip }}</td>
+                        <td>{{ nt.mac |default_if_none:"" }}</td>
+                        <td>{{ nt.ip |default_if_none:"" }}</td>
                         {% if nt.state == 1 %}
                         <td>启用</td>
                         {% else %}

@@ -30,7 +30,7 @@ class DynamicModelSerializer(serializers.ModelSerializer):
         self.dynamic = dynamic
         if instance and data is not empty:
             for key, serial in self._declared_fields.items():
-                if not getattr(serial, 'dynamic', None) or getattr(serial, 'many', None):
+                if not getattr(serial, 'dynamic', None) and getattr(serial, 'many', None):
                     continue
                 self._declared_fields[key] = serial.__class__(instance=getattr(instance, key),
                                                               data=data.get(key), **kwargs)

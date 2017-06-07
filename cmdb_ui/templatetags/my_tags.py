@@ -10,6 +10,10 @@ def get_business_line(obj):
     return [bs.name for bs in obj.business_line.all()]
 
 
+@register.filter(name='get_business_line_id')
+def get_business_line_id(obj):
+    return [bs.id for bs in obj.business_line.all()]
+
 # @register.filter(name='fetch_groups_name')
 # def fetch_groups_name(obj):
 #     return [group.groupname for group in obj.usergroup.all()]

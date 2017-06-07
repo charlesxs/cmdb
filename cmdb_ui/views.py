@@ -10,9 +10,11 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 # from django.contrib.auth import authenticate
-from cmdb.models import User, Asset, IDC, History, BusinessLine
+from cmdb.models import (User, Asset, IDC, History, BusinessLine, NetworkInterface, Memory, CPU,
+                         HWSystem, Disk)
 from cmdb_api.utils import encrypt_pwd
-from .utils import require_login, get_username, clean_server_form_data, pages, clean_form_data
+from .utils import (require_login, get_username, clean_server_form_data, pages, clean_form_data,
+                    clean_networkdevice_form_data)
 from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
                                   IDCSerializer, UserSerializer)
 # from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
@@ -125,12 +127,74 @@ def asset_add_server(request):
 
 
 @require_login
-def asset_edit(request, asset_id):
+def asset_add_networkdevice(request):
     username, realname = get_username(request.session['uid'])
-    asset_types = AssetType.objects.order_by('id')
     idcs = IDC.objects.order_by('id')
-    usergroups = UserGroup.objects.order_by('id')
-    assetgroups = AssetGroup.objects.order_by('id')
+    users = User.objects.order_by('id')
+    business_line = BusinessLine.objects.order_by('id')
+
+    if request.method == 'POST':
+        data, errors = clean_networkdevice_form_data(request, Asset)
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'asset_add_networkdevice.html', locals())
+
+        data.pop('csrfmiddlewaretoken')
+        serial = NetDeviceAssetCreateUpdateSerializer(data=data)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'asset_add_networkdevice.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'asset_add_networkdevice.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'asset_add_networkdevice.html', locals())
+
+
+@require_login
+def asset_edit_server(request, asset_id):
+    username, realname = get_username(request.session['uid'])
+    idcs = IDC.objects.order_by('id')
+    users = User.objects.order_by('id')
+    business_line = BusinessLine.objects.order_by('id')
+
+    try:
+        pk = int(asset_id)
+        asset = Asset.objects.get(pk=pk)
+        networkinterface = NetworkInterface.objects.filter(server=asset.server.id).order_by('name')
+        memory = Memory.objects.filter(server=asset.server.id)
+        cpu = CPU.objects.filter(server=asset.server.id).order_by('socket')
+        disk = Disk.objects.filter(server=asset.server.id)
+        hw_system = HWSystem.objects.filter(server=asset.server.id).first()
+    except (ValueError, ObjectDoesNotExist) as e:
+        hidden_success, errors = 'hidden', str(e)
+        return render(request, 'asset_edit_server.html', locals())
+
+    if request.method == 'POST':
+        print(request.POST.get('asset_type'))
+        data, errors = clean_server_form_data(request, Asset)
+        if errors is not None:
+            hidden_success = 'hidden'
+            return render(request, 'asset_edit_server.html', locals())
+
+        data.pop('csrfmiddlewaretoken')
+        serial = ServerAssetCreateUpdateSerializer(asset, data=data)
+        if serial.is_valid():
+            serial.save()
+            hidden_failed = 'hidden'
+            return render(request, 'asset_edit_server.html', locals())
+        hidden_success, errors = 'hidden', serial.errors
+        return render(request, 'asset_edit_server.html', locals())
+
+    hidden_failed = hidden_success = 'hidden'
+    return render(request, 'asset_edit_server.html', locals())
+
+
+@require_login
+def asset_edit_networkdevice(request, asset_id):
+    username, realname = get_username(request.session['uid'])
+    idcs = IDC.objects.order_by('id')
 
     try:
         pk = int(asset_id)
@@ -138,14 +202,14 @@ def asset_edit(request, asset_id):
     except (ValueError, ObjectDoesNotExist) as e:
         hidden_success, errors = 'hidden', str(e)
         return render(request, 'asset_edit_server.html', locals())
-    
+
     if asset.asset_type.name in ['服务器', '虚拟机', '云主机']:
         route = 'server'
     else:
         route = 'networkdevice'
 
     if request.method == 'POST':
-        data, errors = clean_asset_form_data(request, Asset)
+        data, errors = clean_form_data(request, Asset)
         if errors is not None:
             hidden_success = 'hidden'
             return render(request, 'asset_edit_{0}.html'.format(route), locals())
@@ -193,113 +257,6 @@ def asset_detail(request, asset_id):
     else:
         active_time = asset.update_time - asset.create_time
     return render(request, 'asset_detail.html', locals())
-
-
-@require_login
-def assetgroup_list(request, page_num):
-    username, realname = get_username(request.session['uid'])
-
-    # delete operation
-    if request.method == 'POST':
-        ids = request.POST.get('ids')
-        if ids is None:
-            return JsonResponse({'code': 400, 'msg': 'request error, not receive any data'},
-                                status=400)
-        try:
-            idlist = [int(i) for i in json.loads(ids)]
-            if 1 in idlist:
-                return JsonResponse({'code': 403, 'msg': '不能删除 "默认" 分组'}, status=403)
-            AssetGroup.objects.filter(id__in=idlist).delete()
-        except Exception as e:
-            return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
-        return JsonResponse({'code': 200, 'msg': 'delete ok'}, status=200)
-
-    # search and list
-    page_total_item_num = 10
-    if page_num is None:
-        page_num = 1
-    keyword = request.GET.get('keyword', None)
-
-    if keyword is not None:
-        queryset = AssetGroup.objects.filter(groupname__contains=keyword)
-        start, end, page_html = pages(queryset, page_num, '/assetgroup_list',
-                                      page_total_item_num, keyword=keyword)
-    else:
-        queryset = AssetGroup.objects.all()
-        start, end, page_html = pages(queryset, page_num, '/assetgroup_list',
-                                      page_total_item_num)
-
-    assetgroups = queryset[start:end]
-    return render(request, 'assetgroup_list.html', locals())
-
-
-@require_login
-def assetgroup_add(request):
-    username, realname = get_username(request.session['uid'])
-
-    if request.method == 'POST':
-        data, errors = clean_form_data(request, AssetGroup)
-        if errors is not None:
-            hidden_success = 'hidden'
-            return render(request, 'assetgroup_add.html', locals())
-
-        serial = AssetGroupSerializer(data=data)
-        if serial.is_valid():
-            serial.save()
-            hidden_failed = 'hidden'
-            return render(request, 'assetgroup_add.html', locals())
-        hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'assetgroup_add.html', locals())
-
-    hidden_failed = hidden_success = 'hidden'
-    return render(request, 'assetgroup_add.html', locals())
-
-
-@require_login
-def assetgroup_edit(request, assetgroup_id):
-    username, realname = get_username(request.session['uid'])
-
-    try:
-        pk = int(assetgroup_id)
-        assetgroup = AssetGroup.objects.get(pk=pk)
-    except (ValueError, ObjectDoesNotExist) as e:
-        hidden_success, errors = 'hidden', str(e)
-        return render(request, 'assetgroup_edit.html', locals())
-
-    if request.method == 'POST':
-        data, errors = clean_form_data(request, AssetGroup)
-        if errors is not None:
-            hidden_success = 'hidden'
-            return render(request, 'assetgroup_edit.html', locals())
-
-        serial = AssetGroupSerializer(assetgroup, data=data)
-        if serial.is_valid():
-            serial.save()
-            hidden_failed = 'hidden'
-            return render(request, 'assetgroup_edit.html', locals())
-        hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'assetgroup_edit.html', locals())
-
-    hidden_failed = hidden_success = 'hidden'
-    return render(request, 'assetgroup_edit.html', locals())
-
-
-@require_login
-def assetgroup_detail(request, assetgroup_id):
-    username, realname = get_username(request.session['uid'])
-    try:
-        pk = int(assetgroup_id)
-        assetgroup = AssetGroup.objects.get(pk=pk)
-    except (ValueError, ObjectDoesNotExist) as e:
-        raise Http404
-
-    # groups = user.usergroup.all()
-    # assetgroups = (group.assetgroup.all() for group in groups)
-    # asset_querysets = set(group.asset_set.all() for group in groups)
-    # if len(asset_querysets) < 10:
-    #     asset_querysets.update(set(group.asset_set.all() for group in ChainMap(*assetgroups)))
-    # assets = ChainMap(*asset_querysets)
-    return render(request, 'user_detail.html', locals())
 
 
 @require_login
