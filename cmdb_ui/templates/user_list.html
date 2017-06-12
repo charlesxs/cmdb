@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block navbar %}
-    <li>用户管理</li>
+    <li>业务管理</li>
     <li class="active">查看用户</li>
 {% endblock %}
 
@@ -43,9 +43,9 @@
                         </th>
                         <th>用户名</th>
                         <th>姓名</th>
-                        <th>所属用户组</th>
                         <th>邮箱</th>
                         <th>电话</th>
+                        <th>微信号</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -58,19 +58,19 @@
                         </td>
                         <td>{{ user.username }}</td>
                         <td>{{ user.realname }}</td>
-                        <td>{{ user | fetch_groups_name | join:"、" }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.mobile | default_if_none:"" }}</td>
+                        <td>{{ user.mobile|default_if_none:'' }}</td>
+                        <td>{{ user.wechat|default_if_none:"" }}</td>
 
                         {% if user.username == 'admin' %}
                         <td>
-                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>
+{#                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>#}
                             <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
                         </td>
                         {% else %}
                          <td>
-                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>
+{#                            <a href="{% url 'cmdb_ui:user_detail' user_id=user.id %}" class="btn btn-xs btn-success">详情</a>#}
                             <a href="{% url 'cmdb_ui:user_edit' user_id=user.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>

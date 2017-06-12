@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% load my_tags %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'css/list.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/diagram.css' %}">
+{% endblock %}
+
+{% block navbar %}
+    <li>资产管理</li>
+    <li class="active">机房视图</li>
+{% endblock %}
+
+{% block content %}
+    <!-- 机房视图展示 -->
+    <div class="content">
+        <div class=" content-header">
+            <h3 style="text-indent: 20px;">机房视图</h3>
+        </div>
+
+        <div class="content-text-noborder">
+        {% for cabinet in cabinets %}
+            <div class="col-sm-3" style="display: inline-block; margin-bottom: 20px;">
+                <div class="cabinet-header">机柜号：{{ cabinet.cabinet_number }}</div>
+                <table class="table table-bordered table-responsive table-hover" style="margin-bottom: -8px;">
+                    {% for pc in position_count %}
+                    <tr>
+                        <td style="width: 5px;background-color: rgb(191,221,249)">{{ pc }}U</td>
+                        {% cabinet_map pc cabinet.assets as item %}
+                        {% if item.asset_id %}
+                        <td><a href="{% url 'cmdb_ui:asset_detail' asset_id=item.asset_id %}">{{ item.name }}</a></td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% empty %}
+            <div class="col-sm-3" style="display: inline-block; margin-bottom: 20px;">
+                <div class="cabinet-header">机柜号：000 </div>
+                <table class="table table-bordered table-hover" style="margin-bottom: -8px;">
+                    {% for pc in position_count %}
+                    <tr>
+                        <td style="width: 9px; background-color: rgb(191,221,249);">{{ pc }}U</td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        </div>
+        <div class="clearfix"></div>
+    </div>
+{% endblock %}
+
+
+{% block JavaScripts %}
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/diagram.js' %}"></script>
+{% endblock %}
+
+

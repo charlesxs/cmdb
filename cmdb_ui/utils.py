@@ -9,6 +9,10 @@ from collections import defaultdict
 from urllib.parse import urlencode
 from cmdb.models import User
 from copy import deepcopy
+from collections import namedtuple
+
+
+Cabinet = namedtuple('Cabinet', ['cabinet_number', 'assets'])
 
 
 def require_login(fn):

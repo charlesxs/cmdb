@@ -58,8 +58,8 @@
                         <td>{{ idc | servers_count }}</td>
                         <td>{{ idc.comment | default_if_none:"" }}</td>
                         <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="{% url 'cmdb_ui:idc_edit' idc_id=idc.id %}" class="btn btn-xs btn-info">编辑</a>
+                            <a href="{% url 'cmdb_ui:idc_diagram' idc_id=idc.id %}" class="btn btn-xs btn-primary">视图</a>
+                            <a href="{% url 'cmdb_ui:idc_edit' idc_id=idc.id %}" class="btn btn-xs btn-info">修改</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
                     </tr>

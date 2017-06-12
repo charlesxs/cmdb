@@ -8,15 +8,15 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, Http40
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Q, Count
 # from django.contrib.auth import authenticate
 from cmdb.models import (User, Asset, IDC, History, BusinessLine, NetworkInterface, Memory, CPU,
                          HWSystem, Disk)
 from cmdb_api.utils import encrypt_pwd
 from .utils import (require_login, get_username, clean_server_form_data, pages, clean_form_data,
-                    clean_networkdevice_form_data)
+                    clean_networkdevice_form_data, Cabinet)
 from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer,
-                                  IDCSerializer, UserSerializer)
+                                  IDCSerializer, UserSerializer, BusinessLineSerializer)
 # from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
 from datetime import datetime
 # Create your views here.
@@ -195,40 +195,33 @@ def asset_edit_server(request, asset_id):
 def asset_edit_networkdevice(request, asset_id):
     username, realname = get_username(request.session['uid'])
     idcs = IDC.objects.order_by('id')
+    users = User.objects.order_by('id')
+    business_line = BusinessLine.objects.order_by('id')
 
     try:
         pk = int(asset_id)
         asset = Asset.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         hidden_success, errors = 'hidden', str(e)
-        return render(request, 'asset_edit_server.html', locals())
-
-    if asset.asset_type.name in ['服务器', '虚拟机', '云主机']:
-        route = 'server'
-    else:
-        route = 'networkdevice'
+        return render(request, 'asset_edit_networkdevice.html', locals())
 
     if request.method == 'POST':
-        data, errors = clean_form_data(request, Asset)
+        data, errors = clean_networkdevice_form_data(request, Asset)
         if errors is not None:
             hidden_success = 'hidden'
-            return render(request, 'asset_edit_{0}.html'.format(route), locals())
+            return render(request, 'asset_edit_networkdevice.html', locals())
 
-        if route == 'server':
-            [data.pop(k) for k in ['networkdevice', 'route', 'csrfmiddlewaretoken']]
-            serial = ServerAssetCreateUpdateSerializer(asset, data=data)
-        else:
-            [data.pop(k) for k in ['server', 'route', 'csrfmiddlewaretoken']]
-            serial = NetDeviceAssetCreateUpdateSerializer(asset, data=data)
+        data.pop('csrfmiddlewaretoken')
+        serial = NetDeviceAssetCreateUpdateSerializer(asset, data=data)
         if serial.is_valid():
             serial.save()
             hidden_failed = 'hidden'
-            return render(request, 'asset_edit_{0}.html'.format(route), locals())
+            return render(request, 'asset_edit_networkdevice.html', locals())
         hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'asset_edit_{0}.html'.format(route), locals())
+        return render(request, 'asset_edit_networkdevice.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
-    return render(request, 'asset_edit_{0}.html'.format(route), locals())
+    return render(request, 'asset_edit_networkdevice.html', locals())
 
 
 @require_login
@@ -347,6 +340,27 @@ def idc_edit(request, idc_id):
 
 
 @require_login
+def idc_diagram(request, idc_id):
+    username, realname = get_username(request.session['uid'])
+    position_count = tuple(reversed(range(1, 43)))
+    servers = ('服务器', '云主机', '虚拟机')
+
+    try:
+        pk = int(idc_id)
+        idc = IDC.objects.get(pk=pk)
+    except (ValueError, ObjectDoesNotExist) as e:
+        return render(request, 'idc_diagram.html', locals())
+
+    queryset = Asset.objects.filter(idc=idc.id, cabinet_number__isnull=False)
+    cabinets = []
+    for i in queryset.values('cabinet_number').annotate(Count('cabinet_number')):
+        cabinets.append(Cabinet(i['cabinet_number'],
+                                queryset.filter(cabinet_number=i['cabinet_number'])))
+
+    return render(request, 'idc_diagram.html', locals())
+
+
+@require_login
 def user_list(request, page_num):
     username, realname = get_username(request.session['uid'])
 
@@ -388,7 +402,6 @@ def user_list(request, page_num):
 @require_login
 def user_add(request):
     username, realname = get_username(request.session['uid'])
-    usergroups = UserGroup.objects.order_by('id')
 
     if request.method == 'POST':
         data, errors = clean_form_data(request, User, multikey=('usergroup', ))
@@ -413,7 +426,6 @@ def user_add(request):
 @require_login
 def user_edit(request, user_id):
     username, realname = get_username(request.session['uid'])
-    usergroups = UserGroup.objects.order_by('id')
 
     try:
         pk = int(user_id)
@@ -470,7 +482,7 @@ def user_detail(request, user_id):
 
 
 @require_login
-def usergroup_list(request, page_num):
+def business_line_list(request, page_num):
     username, realname = get_username(request.session['uid'])
 
     # delete operation
@@ -483,7 +495,7 @@ def usergroup_list(request, page_num):
             idlist = [int(i) for i in json.loads(ids)]
             if 1 in idlist:
                 return JsonResponse({'code': 403, 'msg': '不能删除 管理员组'}, status=403)
-            UserGroup.objects.filter(id__in=idlist).delete()
+            BusinessLine.objects.filter(id__in=idlist).delete()
         except Exception as e:
             return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
         return JsonResponse({'code': 200, 'msg': 'delete ok'}, status=200)
@@ -495,76 +507,76 @@ def usergroup_list(request, page_num):
     keyword = request.GET.get('keyword', None)
 
     if keyword is not None:
-        queryset = UserGroup.objects.filter(groupname__contains=keyword)
-        start, end, page_html = pages(queryset, page_num, '/usergroup_list',
+        queryset = BusinessLine.objects.filter(name__contains=keyword)
+        start, end, page_html = pages(queryset, page_num, '/business_list_line',
                                       page_total_item_num, keyword=keyword)
     else:
-        queryset = UserGroup.objects.all()
-        start, end, page_html = pages(queryset, page_num, '/usergroup_list',
+        queryset = BusinessLine.objects.all()
+        start, end, page_html = pages(queryset, page_num, '/business_list_line',
                                       page_total_item_num)
 
-    usergroups = queryset[start:end]
-    return render(request, 'usergroup_list.html', locals())
+    business_line = queryset[start:end]
+    return render(request, 'business_line_list.html', locals())
 
 
 @require_login
-def usergroup_add(request):
+def business_line_add(request):
     username, realname = get_username(request.session['uid'])
 
     if request.method == 'POST':
-        data, errors = clean_form_data(request, UserGroup)
+        data, errors = clean_form_data(request, BusinessLine)
         if errors is not None:
             hidden_success = 'hidden'
-            return render(request, 'usergroup_add.html', locals())
+            return render(request, 'business_line_add.html', locals())
 
-        serial = UserGroupSerializer(data=data)
+        serial = BusinessLineSerializer(data=data)
         if serial.is_valid():
             serial.save()
             hidden_failed = 'hidden'
-            return render(request, 'usergroup_add.html', locals())
+            return render(request, 'business_line_add.html', locals())
         hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'usergroup_add.html', locals())
+        return render(request, 'business_line_add.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
-    return render(request, 'usergroup_add.html', locals())
+    return render(request, 'business_line_add.html', locals())
 
 
 @require_login
-def usergroup_edit(request, usergroup_id):
+def business_line_edit(request, usergroup_id):
     username, realname = get_username(request.session['uid'])
 
     try:
         pk = int(usergroup_id)
-        usergroup = UserGroup.objects.get(pk=pk)
+        usergroup = BusinessLine.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         hidden_success, errors = 'hidden', str(e)
-        return render(request, 'usergroup_edit.html', locals())
+        return render(request, 'business_line_edit.html', locals())
 
     if request.method == 'POST':
-        data, errors = clean_form_data(request, UserGroup)
+        data, errors = clean_form_data(request, BusinessLine)
         if errors is not None:
             hidden_success = 'hidden'
-            return render(request, 'usergroup_edit.html', locals())
+            return render(request, 'business_line_edit.html', locals())
 
-        serial = UserGroupSerializer(usergroup, data=data)
+        serial = BusinessLineSerializer(usergroup, data=data)
         if serial.is_valid():
             serial.save()
             hidden_failed = 'hidden'
-            return render(request, 'usergroup_edit.html', locals())
+            return render(request, 'business_line_edit.html', locals())
         hidden_success, errors = 'hidden', serial.errors
-        return render(request, 'usergroup_edit.html', locals())
+        return render(request, 'business_line_edit.html', locals())
 
     hidden_failed = hidden_success = 'hidden'
-    return render(request, 'usergroup_edit.html', locals())
+    return render(request, 'business_line_edit.html', locals())
 
 
 @require_login
-def usergroup_detail(request, usergroup_id):
+def business_line_detail(request, usergroup_id):
     username, realname = get_username(request.session['uid'])
     servers = ('服务器', '云主机', '虚拟机')
     try:
         pk = int(usergroup_id)
-        usergroup = UserGroup.objects.get(pk=pk)
+        usergroup = BusinessLine.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         raise Http404
 
@@ -574,7 +586,7 @@ def usergroup_detail(request, usergroup_id):
     # if len(asset_querysets) < 10:
     #     asset_querysets.update(set(group.asset_set.all() for group in ChainMap(*assetgroups)))
     # assets = ChainMap(*asset_querysets)
-    return render(request, 'usergroup_detail.html', locals())
+    return render(request, 'business_line_detail.html', locals())
 
 
 

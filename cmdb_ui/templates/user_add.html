@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block navbar %}
-    <li>用户管理</li>
+    <li>业务管理</li>
     <li class="active">添加用户</li>
 {% endblock %}
 
@@ -57,17 +57,6 @@
             </div>
 
             <div class="form-group">
-                <label for="usergroup" class="col-sm-2 control-label">用户组</label>
-                <div class="col-sm-6">
-                    <select name="usergroup" id="usergroup" multiple class="form-control">
-                        {% for usergroup in usergroups %}
-                        <option value="{{ usergroup.id }}">{{ usergroup.groupname }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <label for="email" class="col-sm-2 control-label">邮箱</label>
                 <div class="col-sm-6">
                     <input type="email" class="form-control" id="email" name="email" placeholder="xxx@example.com" aria-required="true">
@@ -80,6 +69,13 @@
                 <label for="mobile" class="col-sm-2 control-label">手机</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control" id="mobile" name="mobile">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="wechat" class="col-sm-2 control-label">微信号</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="wechat" name="wechat">
                 </div>
             </div>
 

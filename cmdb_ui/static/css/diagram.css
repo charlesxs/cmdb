@@ -1,0 +1,26 @@
+td{
+    line-height: 2px !important;
+    cursor: pointer;
+}
+
+.cabinet-header {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.blue {
+    background-color: #4a79ff;
+    color: whitesmoke;
+}
+
+td>a, td>a:link, td>a:focus, td>a:visited, td>a:active {
+    text-emphasis: none;
+    color: whitesmoke;
+}
+
+td>a:hover{
+    text-decoration: none;
+    color: whitesmoke;
+}
+

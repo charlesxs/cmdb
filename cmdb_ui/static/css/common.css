@@ -78,4 +78,7 @@ a.font-logout {
     border-color: #DBDBDB;
 }
 
+.content-text-noborder{
+    margin: 10px 2% 0 20px;
+}
 

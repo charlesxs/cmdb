@@ -7,26 +7,26 @@
 {% endblock %}
 
 {% block navbar %}
-    <li>资产管理</li>
-    <li class="active">查看资产组</li>
+    <li>业务管理</li>
+    <li class="active">查看业务线</li>
 {% endblock %}
 
 {% block content %}
-    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选资产组删除失败 ! !</div>
-    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选资产组 ! !</div>
+    <div class="alert alert-danger offset-left-2 hidden" role="alert">所选业务线删除失败 ! !</div>
+    <div class="alert alert-success offset-left-2 hidden" role="alert">已成功删除所选业务线 ! !</div>
     <!-- 当前页展示 -->
     <div class="content">
         <div class=" content-header">
-            <h3 style="text-indent: 20px;">查看资产组</h3>
+            <h3 style="text-indent: 20px;">查看业务线</h3>
         </div>
 
         <div class="content-op">
-            <a href="{% url 'cmdb_ui:assetgroup_add' %}" class="btn btn-success btn-sm btn-asset-position">添加资产组</a>
+            <a href="{% url 'cmdb_ui:business_line_add' %}" class="btn btn-success btn-sm btn-asset-position">添加业务线</a>
             <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
             <div class="search">
                 <div class="input-group search-width">
-                    <input id="search-input" type="text" class="form-control" placeholder="group name">
+                    <input id="search-input" type="text" class="form-control" placeholder="业务线">
                     <span class="input-group-btn">
                         <button class="btn btn-info" type="button">Search</button>
                     </span>
@@ -41,38 +41,26 @@
                         <th class="text-center">
                             <input id="checkall" type="checkbox" name="checkall" value="checkall" >
                         </th>
-                        <th>组名</th>
-                        <th>拥有主机数</th>
-                        <th>所属用户组/项目组</th>
+                        <th>业务线</th>
                         <th>注释</th>
                         <th>操作</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for ag in assetgroups %}
-                    <tr data-id="{{ ag.id }}">
+                    {% for bn in business_line %}
+                    <tr data-id="{{ bn.name }}">
                         <td class="text-center">
-                            <input type="checkbox" name="assetgroupid" value="{{ ag.id }}">
+                            <input type="checkbox" name="business_line_id" value="{{ bn.id }}">
                         </td>
-                        <td>{{ ag.groupname }}</td>
-                        <td>{{ ag | servers_count }}</td>
-                        <td>{{ ag | fetch_aggroup_name | join:"、" }}</td>
-                        <td>{{ ag.comment | default_if_none:"" }}</td>
+                        <td>{{ bn.name }}</td>
+                        <td>{{ bn.comment | default_if_none:"" }}</td>
 
-                        {% if ag.groupname == '默认' %}
-                        <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="#" class="btn btn-xs btn-info" disabled>编辑</a>
-                            <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" disabled>删除</button>
-                        </td>
-                        {% else %}
                          <td>
                             <a href="#" class="btn btn-xs btn-success">详情</a>
-                            <a href="{% url 'cmdb_ui:assetgroup_edit' assetgroup_id=ag.id %}" class="btn btn-xs btn-info">编辑</a>
+                            <a href="{% url 'cmdb_ui:business_line_edit' business_line_id=bn.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
-                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

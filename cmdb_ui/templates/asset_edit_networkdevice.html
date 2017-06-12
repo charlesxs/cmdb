@@ -9,7 +9,7 @@
 
 {% block navbar %}
     <li>资产管理</li>
-    <li class="active">编辑资产信息</li>
+    <li class="active">修改资产</li>
 {% endblock %}
 
 {% block content %}
@@ -18,13 +18,11 @@
     <!-- 当前页展示 -->
     <div class="content content-padding">
         <div class="content-header">
-            <h3 style="text-indent: 20px;">编辑资产信息</h3>
+            <h3 style="text-indent: 20px;">修改资产</h3>
         </div>
 
-        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_edit' asset_id=asset.id %}" method="POST">
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:asset_edit_networkdevice' asset_id=asset.id %}" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="route" id="route" value="networkdevice">
-
             <div class="form-group">
                 <label for="serialnum" class="col-sm-2 control-label">资产序列号</label>
                 <div class="col-sm-6">
@@ -37,14 +35,8 @@
             <div class="form-group">
                 <label for="asset_type_select" class="col-sm-2 control-label">资产类型</label>
                 <div class="col-sm-6">
-                    <select name="asset_type" id="asset_type_select" class="form-control" disabled>
-                        {% for atp in asset_types %}
-                            {% if atp.id == asset.asset_type_id %}
-                        <option value="{{ atp.id }}" selected="selected">{{ atp.name }}</option>
-                            {% else %}
-                        <option value="{{ atp.id }}">{{ atp.name }}</option>
-                            {% endif %}
-                        {% endfor %}
+                    <select name="asset_type" id="asset_type_select" class="form-control">
+                        <option value="{{ asset.asset_type }}" selected>{{ asset.asset_type }}</option>
                     </select>
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
@@ -56,7 +48,7 @@
                 <div class="col-sm-6">
                     <select id="idc_select" name="idc" class="form-control">
                         {% for idc in idcs %}
-                            {% if idc.id == asset.idc_id %}
+                            {% if asset.idc_id == idc.id %}
                         <option value="{{ idc.id }}" selected>{{ idc.name }}</option>
                             {% else %}
                         <option value="{{ idc.id }}">{{ idc.name }}</option>
@@ -69,28 +61,28 @@
            </div>
 
             <div class="form-group">
-                <label for="rack_number" class="col-sm-2 control-label">机柜号</label>
+                <label for="cabinet_number" class="col-sm-2 control-label">机柜号</label>
                 <div class="col-sm-6">
-                    <input type="number" name="rack_number" class="form-control" id="rack_number" placeholder="输入必须为数字" value="{{ asset.rack_number |default_if_none:"" }}">
+                    <input type="number" name="cabinet_number" class="form-control" id="cabinet_number" placeholder="输入必须为数字" value="{{ asset.cabinet_number }}">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="rack_position" class="col-sm-2 control-label">机柜U位</label>
+                <label for="cabinet_position" class="col-sm-2 control-label">机柜U位</label>
                 <div class="col-sm-6">
-                    <input type="number" class="form-control" name="rack_position" id="rack_position" placeholder="输入必须为数字" value="{{ asset.rack_position |default_if_none:"" }}">
+                    <input type="number" class="form-control" name="cabinet_position" id="cabinet_position" placeholder="输入必须为数字" value="{{ asset.cabinet_position }}">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="usergroup_select" class="col-sm-2 control-label">用户组/项目组</label>
+                <label for="use_select" class="col-sm-2 control-label">负责人</label>
                 <div class="col-sm-6">
-                    <select id="usergroup_select" name="usergroup[]" multiple class="form-control">
-                        {% for usergroup in usergroups %}
-                            {% if usergroup.id in asset|fetch_groups_id %}
-                        <option value="{{ usergroup.id }}" selected>{{ usergroup.groupname }}</option>
+                    <select id="use_select" name="user" class="form-control">
+                        {% for user in users %}
+                            {% if asset.user_id == user.id %}
+                        <option value="{{ user.id }}" selected>{{ user.realname }}</option>
                             {% else %}
-                        <option value="{{ usergroup.id }}">{{ usergroup.groupname }}</option>
+                        <option value="{{ user.id }}">{{ user.realname }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -99,14 +91,14 @@
             </div>
 
             <div class="form-group">
-                <label for="assetgroup_type_select" class="col-sm-2 control-label">资产组</label>
+                <label for="business_line_select" class="col-sm-2 control-label">业务线</label>
                 <div class="col-sm-6">
-                    <select id="assetgroup_type_select" name="assetgroup" class="form-control">
-                        {% for assetgroup in assetgroups %}
-                            {% if assetgroup.id == asset.assetgroup_id %}
-                        <option value="{{ assetgroup.id }}" selected>{{ assetgroup.groupname }}</option>
+                    <select id="business_line_select" name="business_line" multiple class="form-control">
+                        {% for bn in business_line %}
+                            {% if bn.id in asset|get_business_line_id %}
+                        <option value="{{ bn.id }}" selected>{{ bn.name }}</option>
                             {% else %}
-                        <option value="{{ assetgroup.id }}">{{ assetgroup.groupname }}</option>
+                        <option value="{{ bn.id }}">{{ bn.name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -115,25 +107,56 @@
 
             <div id="networkdevice">
                 <div class="form-group">
-                    <label for="netname" class="col-sm-2 control-label">设备名/设备型号</label>
+                    <label for="name" class="col-sm-2 control-label">设备名称</label>
                     <div class="col-sm-6">
-                        <input type="text"  class="form-control" name="networkdevice-name" id="netname" aria-required="true" value="{{ asset.networkdevice.name }}">
+                        <input type="text" class="form-control" name="networkdevice-name" id="name" aria-required="true" value="{{ asset.networkdevice.name }}">
                     </div>
                     <span style="color: red; font-size: 20px;">*</span>
+                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="networkdevice-name">该字段不能为空!</span>
+               </div>
+
+                <div class="form-group">
+                    <label for="manufacturer" class="col-sm-2 control-label">生产厂商</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="networkdevice-manufacturer" id="manufacturer" value="{{ asset.networkdevice.manufacturer }}">
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="netvendor" class="col-sm-2 control-label">供应商</label>
+                    <label for="product_name" class="col-sm-2 control-label">产品型号</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="networkdevice-vendor" id="netvendor" value="{{ asset.networkdevice.vendor |default_if_none:""}}">
+                        <input type="text" class="form-control" name="networkdevice-product_name" id="product_name" aria-required="true" value="{{ asset.networkdevice.product_name }}">
+                    </div>
+                    <span style="color: red; font-size: 20px;">*</span>
+                    <span class="alert alert-danger tip-window hidden" role="alert" bind_name="networkdevice-product_name">该字段不能为空!</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="ip" class="col-sm-2 control-label">IP地址</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="networkdevice-ip" id="ip" value="{{ asset.networkdevice.ip|default_if_none:'' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mac" class="col-sm-2 control-label">MAC地址</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="networkdevice-mac" id="mac" value="{{ asset.networkdevice.mac|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
-
+           <div class="form-group">
+                <label for="use" class="col-sm-2 control-label">用途</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="use" id="use" aria-required="true" value="{{ asset.use }}">
+                </div>
+                <span style="color: red; font-size: 20px;">*</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="use">该字段不能为空!</span>
+            </div>
             <div class="form-group">
                 <label for="comment" class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" name="comment" id="comment" value="{{ asset.networkdevice.comment |default_if_none:""}}">
+                    <input type="text" class="form-control" name="comment" id="comment" value="{{ asset.comment|default_if_none:'' }}">
                 </div>
             </div>
             <div class="form-group">
@@ -142,10 +165,10 @@
                     <select id="state" name="state" class="form-control">
                         {% if asset.state == 1 %}
                         <option value="1" selected>在线</option>
-                        <option value="0" >离线</option>
+                        <option value="0">下线</option>
                         {% else %}
-                        <option value="0" selected>离线</option>
-                        <option value="1" >在线</option>
+                        <option value="1">在线</option>
+                        <option value="0" selected>下线</option>
                         {% endif %}
                     </select>
                 </div>
@@ -164,5 +187,5 @@
 {% endblock %}
 
 {% block JavaScripts %}
-    <script type="text/javascript" src="{% static 'js/asset_add.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/add.js' %}"></script>
 {% endblock %}

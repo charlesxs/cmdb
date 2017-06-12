@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from django import template
+# from cmdb.models import *
 
 register = template.Library()
 
@@ -13,15 +14,6 @@ def get_business_line(obj):
 @register.filter(name='get_business_line_id')
 def get_business_line_id(obj):
     return [bs.id for bs in obj.business_line.all()]
-
-# @register.filter(name='fetch_groups_name')
-# def fetch_groups_name(obj):
-#     return [group.groupname for group in obj.usergroup.all()]
-
-
-# @register.filter(name='fetch_groups_id')
-# def fetch_groups_id(obj):
-#     return [group.id for group in obj.usergroup.all()]
 
 
 @register.filter(name="seconds_to_hours")
@@ -52,23 +44,18 @@ def days_to_years(d, to=None):
     return round(years, 2)
 
 
-@register.filter(name="fetch_aggroup_name")
-def fetch_aggroup_name(assetgroup):
-    return [group.groupname for group in assetgroup.usergroup_set.all()]
-
-
 @register.filter(name='servers_count')
 def servers_count(obj):
     return obj.asset_set.count()
 
 
-@register.filter(name='fetch_assetgroup_names')
-def fetch_assetgroup_names(usergroup):
-    return [group.groupname for group in usergroup.assetgroup.all()]
-
-
-@register.filter(name='fetch_assetgroup_objs')
-def fetch_assetgroup_objs(usergroup):
-    return usergroup.assetgroup.all()
-
+@register.assignment_tag(name='cabinet_map')
+def cabinet_map(position, asset_queryset):
+    for asset in asset_queryset:
+        if asset.cabinet_position != position:
+            continue
+        if asset.asset_type in ('服务器', '虚拟机', '云主机'):
+            return {'asset_id': asset.id, 'name': asset.server.lan_ip}
+        return {'asset_id': asset.id, 'name': asset.networkdevice.product_name}
+    return {'asset_id': None, 'name': ''}
 
