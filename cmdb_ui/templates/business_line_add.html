@@ -6,28 +6,28 @@
 {% endblock %}
 
 {% block navbar %}
-    <li>用户管理</li>
-    <li class="active">添加用户组</li>
+    <li>业务管理</li>
+    <li class="active">添加业务线</li>
 {% endblock %}
 
 {% block content %}
-    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">用户组添加失败: {{ errors }}</div>
-    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">用户组添加成功 ! !</div>
+    <div id="alert-danger" class="alert alert-danger offset-left-2 {{ hidden_failed }}" role="alert">业务线添加失败: {{ errors }}</div>
+    <div id="alert-success" class="alert alert-success offset-left-2 {{ hidden_success }}" role="alert">业务线添加成功 ! !</div>
     <!-- 当前页展示 -->
     <div class="content content-padding">
         <div class="content-header">
-            <h3 style="text-indent: 20px;">添加用户组</h3>
+            <h3 style="text-indent: 20px;">添加业务线</h3>
         </div>
 
-        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:usergroup_add' %}" method="POST">
+        <form class="form-horizontal" style="margin-top: 30px;" action="{% url 'cmdb_ui:business_line_add' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="usergroup_name" class="col-sm-2 control-label">组名</label>
+                <label for="name" class="col-sm-2 control-label">业务线</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="usergroup_name" name="groupname" aria-required="true" placeholder="用户组组名">
+                    <input type="text" class="form-control" id="name" name="name" aria-required="true" placeholder="业务线名称">
                 </div>
                 <span style="color: red; font-size: 20px;">*</span>
-                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="groupname">该字段不能为空!</span>
+                <span class="alert alert-danger tip-window hidden" role="alert" bind_name="name">该字段不能为空!</span>
             </div>
 
             <div class="form-group">

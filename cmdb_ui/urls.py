@@ -24,8 +24,8 @@ urlpatterns = [
     url(r'^user_detail/(?P<user_id>[0-9]+)/$', user_detail, name='user_detail'),
 
     url(r'^business_line_list/(?P<page_num>[0-9]+)?/?$', business_line_list, name='business_line_list'),
-    url(r'^business_line_add/$', business_line_list, name='business_line_add'),
-    url(r'^business_line_edit/(?P<business_line_id>[0-9]+)/$', business_line_list, name='business_line_edit'),
-    url(r'^business_line_detail/(?P<business_line_id>[0-9]+)/$', business_line_list, name='business_line_detail'),
+    url(r'^business_line_add/$', business_line_add, name='business_line_add'),
+    url(r'^business_line_edit/(?P<business_line_id>[0-9]+)/$', business_line_edit, name='business_line_edit'),
+    url(r'^business_line_detail/(?P<business_line_id>[0-9]+)/$', business_line_detail, name='business_line_detail'),
 
 ]

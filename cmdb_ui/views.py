@@ -542,12 +542,12 @@ def business_line_add(request):
 
 
 @require_login
-def business_line_edit(request, usergroup_id):
+def business_line_edit(request, business_line_id):
     username, realname = get_username(request.session['uid'])
 
     try:
-        pk = int(usergroup_id)
-        usergroup = BusinessLine.objects.get(pk=pk)
+        pk = int(business_line_id)
+        business_line = BusinessLine.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         hidden_success, errors = 'hidden', str(e)
         return render(request, 'business_line_edit.html', locals())
@@ -558,7 +558,7 @@ def business_line_edit(request, usergroup_id):
             hidden_success = 'hidden'
             return render(request, 'business_line_edit.html', locals())
 
-        serial = BusinessLineSerializer(usergroup, data=data)
+        serial = BusinessLineSerializer(business_line, data=data)
         if serial.is_valid():
             serial.save()
             hidden_failed = 'hidden'
@@ -571,11 +571,11 @@ def business_line_edit(request, usergroup_id):
 
 
 @require_login
-def business_line_detail(request, usergroup_id):
+def business_line_detail(request, business_line_id):
     username, realname = get_username(request.session['uid'])
     servers = ('服务器', '云主机', '虚拟机')
     try:
-        pk = int(usergroup_id)
+        pk = int(business_line_id)
         usergroup = BusinessLine.objects.get(pk=pk)
     except (ValueError, ObjectDoesNotExist) as e:
         raise Http404
