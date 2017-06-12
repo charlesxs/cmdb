@@ -57,7 +57,7 @@
                         <td>{{ bn.comment | default_if_none:"" }}</td>
 
                          <td>
-                            <a href="#" class="btn btn-xs btn-success">详情</a>
+{#                            <a href="#" class="btn btn-xs btn-success">详情</a>#}
                             <a href="{% url 'cmdb_ui:business_line_edit' business_line_id=bn.id %}" class="btn btn-xs btn-info">编辑</a>
                             <button type="button" class="btn btn-xs btn-danger" data-toggle="modal">删除</button>
                         </td>
