@@ -32,12 +32,16 @@ _资产列表_
 
 ![addserver](/../screenshots/screenshots/asset_list-001.png)
 
+_资产详情页_
+
 ![addserver](/../screenshots/screenshots/detail-001.png)
 
 
 _机房_
 
 ![addserver](/../screenshots/screenshots/idc-001.png)
+
+_机房视图_
 
 ![view](/../screenshots/screenshots/view-001.png)
 
