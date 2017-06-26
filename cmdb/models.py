@@ -3,7 +3,7 @@ from django.db import models
 
 
 class IDC(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, help_text='IDC')
     comment = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
@@ -11,7 +11,7 @@ class IDC(models.Model):
 
 
 class BusinessLine(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, help_text='业务线')
     comment = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
@@ -19,8 +19,8 @@ class BusinessLine(models.Model):
 
 
 class User(models.Model):
-    username = models.CharField(max_length=20, unique=True, db_index=True)
-    realname = models.CharField(max_length=20, null=True, blank=True)
+    username = models.CharField(max_length=20, unique=True, db_index=True, help_text='用户名')
+    realname = models.CharField(max_length=20, null=True, blank=True, help_text='姓名')
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=254)
     mobile = models.CharField(max_length=11, null=True, blank=True)
@@ -36,18 +36,18 @@ class Asset(models.Model):
         (1, 'online')
     )
 
-    serialnum = models.CharField(max_length=100, unique=True, help_text='资产序列号,内部约定')
-    asset_type = models.CharField(max_length=120, help_text='资产类型: 服务器,虚拟机,云主机,路由器,交换机等')
-    idc = models.ForeignKey(IDC, default=1, on_delete=models.SET_DEFAULT)
+    serialnum = models.CharField(max_length=100, unique=True, help_text='资产序列号')
+    asset_type = models.CharField(max_length=120, help_text='资产类型')
+    idc = models.ForeignKey(IDC, default=1, on_delete=models.SET_DEFAULT, help_text='IDC')
     cabinet_number = models.IntegerField(null=True, blank=True, help_text="机柜号")
     cabinet_position = models.IntegerField(null=True, blank=True, help_text="机柜U位")
-    create_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
-    contact = models.ForeignKey(User, default=1, on_delete=models.SET_DEFAULT, help_text='此资产负责人')
-    business_line = models.ManyToManyField(BusinessLine, null=True, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True, help_text='创建日期')
+    update_time = models.DateTimeField(auto_now=True, help_text='更新日期')
+    contact = models.ForeignKey(User, default=1, on_delete=models.SET_DEFAULT, help_text='负责人')
+    business_line = models.ManyToManyField(BusinessLine, null=True, blank=True, help_text='业务线')
     use = models.CharField(max_length=120, help_text="用途")
-    state = models.SmallIntegerField(db_index=True, choices=STATE_CHOICE, default=1)
-    comment = models.CharField(max_length=200, null=True, blank=True)
+    state = models.SmallIntegerField(db_index=True, choices=STATE_CHOICE, default=1, help_text='状态')
+    comment = models.CharField(max_length=200, null=True, blank=True, help_text='注释')
 
     def __str__(self):
         return self.serialnum

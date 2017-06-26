@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from collections import defaultdict
-from urllib.parse import urlencode
 from cmdb.models import User
 from copy import deepcopy
 from collections import namedtuple
@@ -170,17 +169,17 @@ class Pager:
     pre_button = '<li><a href="%s" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>'
     next_button = '<li> <a href="%s" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>'
 
-    def __init__(self, total_page, page_num, uri, page_total_item_num=10, **searchargs):
+    def __init__(self, total_page, page_num, uri, page_total_item_num=10, params=None):
         self.total_page = total_page
         self.page_num = page_num
         self.uri = uri
         self.page_total_item_num = page_total_item_num
-        self.searchargs = searchargs
+        self.params = params
 
     def url(self, num):
         page_url = '/'.join([self.uri, str(num), ""])
-        if self.searchargs['keyword'] is not None:
-            return page_url + '?' + urlencode(self.searchargs)
+        if self.params is not None:
+            return page_url + '?' + self.params
         return page_url
 
     def _page(self):
@@ -226,9 +225,9 @@ class Pager:
         return start, end, html
 
 
-def pages(queryset, page_num, uri, page_total_item_num, keyword=None):
+def pages(queryset, page_num, uri, page_total_item_num, params=None):
     d, m = divmod(queryset.count(), page_total_item_num)
     total_page = d + (1 if m > 0 else m)
     start, end, page_html = Pager(total_page, int(page_num), uri,
-                                  page_total_item_num, keyword=keyword).page()
+                                  page_total_item_num, params=params).page()
     return start, end, page_html

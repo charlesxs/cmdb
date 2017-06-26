@@ -59,7 +59,7 @@ a.font-logout {
 }
 
 .content-header {
-    height: 65px;
+    height: 80px;
     border-bottom: 1px #DBDBDB solid;
     border-top: 3px #DBDBDB solid;
 }
@@ -81,4 +81,3 @@ a.font-logout {
 .content-text-noborder{
     margin: 10px 2% 0 20px;
 }
-

@@ -23,12 +23,20 @@ var PageRecoder = {
 };
 
 
+function urlEncode(params) {
+    var root = '/?';
+    for (var k in params){
+        root = root + '{0}={1}&'.format(k, params[k]);
+    }
+    return root.slice(0, -1);
+}
+
+
 function SearchGet(){
     var value = $('#search-input').val().trim();
     if(value !== ""){
-        var root_path = location.pathname.split('/').slice(0, 2).join('/') + '/?keyword=';
-        // console.log(root_path + value);
-        location.href = root_path + value;
+        var root_path = location.pathname.split('/').slice(0, 2).join('/');
+        location.href = root_path + urlEncode({'keyword': value});
     }
 }
 

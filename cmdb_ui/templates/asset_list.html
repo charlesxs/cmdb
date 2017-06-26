@@ -17,12 +17,43 @@
     <!-- 当前页展示 -->
     <div class="content">
         <div class=" content-header">
-            <h3 style="text-indent: 20px;">资产列表</h3>
+            <h3 style="text-indent: 20px; width: 150px; float: left;">资产列表</h3>
+            <button class="btn btn-sm btn-primary advance-search">高级搜索</button>
+            <div class="advance-search-obj hidden" id="advance-search-example">
+                <select name="field" class="field">
+                    <option value=""></option>
+                    <option value="asset_type">资产类型</option>
+                    <option value="idc">机房</option>
+                    <option value="business_line">业务线</option>
+                    <option value="cabinet_number">机柜号</option>
+                    <option value="contact">负责人</option>
+                </select>
+                <select name="value" class="value">
+                    <option value=""></option>
+                </select>
+{#                <input type="text"  class="form-control input-value">#}
+            </div>
+
+            <div class="advance-search-obj">
+                <select name="field" class="field">
+                    <option value=""></option>
+                    <option value="asset_type">资产类型</option>
+                    <option value="idc">机房</option>
+                    <option value="business_line">业务线</option>
+                    <option value="cabinet_number">机柜号</option>
+                    <option value="contact">负责人</option>
+                </select>
+                <select name="value" class="value">
+                    <option value=""></option>
+                </select>
+{#                <input type="text"  class="form-control input-value">#}
+            </div>
+            <button class="btn-sm btn btn-default advance-search-add">+</button>
+        <div class="clearfix"></div>
         </div>
 
         <div class="content-op">
             <a href="{% url 'cmdb_ui:asset_add_server' %}" class="btn btn-success btn-sm btn-asset-position">添加资产</a>
-{#            <a href="#" class="btn btn-danger btn-sm btn-asset-position">删除所选</a>#}
             <button type="button" id="deletion-selected" class="btn btn-sm btn-danger" data-toggle="modal">删除所选</button>
 
             <div class="search">
@@ -48,6 +79,8 @@
                         <th>业务线</th>
                         <th>机房</th>
                         <th>系统</th>
+                        <th>内存</th>
+                        <th>磁盘</th>
                         <th>用途</th>
                         <th>负责人</th>
                         <th>状态</th>
@@ -77,7 +110,11 @@
                         <td>{{ asset.idc.name }}</td>
                         {% if asset.asset_type in servers %}
                             <td>{{ asset.server.os }}</td>
+                            <td>{{ asset.server.logical_memory }}</td>
+                            <td>{{ asset.server.logical_disk }}</td>
                         {% else %}
+                            <td></td>
+                            <td></td>
                             <td></td>
                         {% endif %}
                         <td>{{ asset.use }}</td>
@@ -132,6 +169,7 @@
 {% block JavaScripts %}
     <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/list.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/list_asset.js' %}"></script>
 {% endblock %}
 
 

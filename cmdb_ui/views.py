@@ -19,6 +19,7 @@ from cmdb_api.serializers import (ServerAssetCreateUpdateSerializer, NetDeviceAs
                                   IDCSerializer, UserSerializer, BusinessLineSerializer)
 # from .forms import UserForm, AssetForm, ServerForm, NetworkDeviceForm
 from datetime import datetime
+from urllib.parse import urlencode
 # Create your views here.
 
 
@@ -84,20 +85,63 @@ def asset_list(request, page_num):
     page_total_item_num = 30
     if page_num is None:
         page_num = 1
-    keyword = request.GET.get('keyword', None)
 
-    if keyword is not None:
+    params, keyword = None, request.GET.get('keyword', None)
+
+    if len(request.GET) != 0 and keyword not in request.GET:
+        params = urlencode(request.GET)
+
+    if params is not None:
+        queryset = Asset.objects.all()
+
+        if 'idc' in request.GET:
+            print('idc', request.GET['idc'])
+            queryset = queryset.filter(idc__name=request.GET['idc'])
+            print(queryset)
+        if 'asset_type' in request.GET:
+            print('asset_type', request.GET['asset_type'])
+            queryset = queryset.filter(asset_type=request.GET['asset_type'])
+        if 'business_line' in request.GET:
+            queryset = queryset.filter(business_line__name=request.GET['business_line'])
+        if 'contact' in request.GET:
+            queryset = queryset.filter(contact__realname=request.GET['contact'])
+            print(queryset)
+        if 'cabinet_number' in request.GET:
+            queryset = queryset.filter(cabinet_number=int(request.GET['cabinet_number']))
+
+        start, end, page_html = pages(queryset, page_num, '/asset_list',
+                                      page_total_item_num, params=params)
+
+    elif keyword is not None:
         queryset = Asset.objects.filter(Q(server__hostname__contains=keyword) |
                                         Q(server__lan_ip=keyword) |
                                         Q(networkdevice__name__contains=keyword))
+        params = urlencode({'keyword': keyword})
         start, end, page_html = pages(queryset, page_num, '/asset_list',
-                                      page_total_item_num, keyword=keyword)
+                                      page_total_item_num, params=params)
     else:
         queryset = Asset.objects.all()
         start, end, page_html = pages(queryset, page_num, '/asset_list',
                                       page_total_item_num)
     assets = queryset[start:end]
     return render(request, 'asset_list.html', locals())
+
+
+@require_login
+def object_query(request):
+    field = request.POST.get('field')
+    if field == 'idc':
+        return JsonResponse({'data': [i.name for i in IDC.objects.all()]})
+    elif field == 'business_line':
+        return JsonResponse({'data': [i.name for i in BusinessLine.objects.all()]})
+    elif field == 'contact':
+        return JsonResponse({'data': [i.realname for i in User.objects.all()]})
+    elif field == 'asset_type':
+        types = Asset.objects.values('asset_type').annotate(Count('asset_type'))
+        return JsonResponse({'data': [i['asset_type'] for i in types]})
+    elif field == 'cabinet_number':
+        numbers = Asset.objects.values('cabinet_number').annotate(Count('cabinet_number'))
+        return JsonResponse({'data': [i['cabinet_number'] for i in numbers if i['cabinet_number'] is not None]})
 
 
 @require_login

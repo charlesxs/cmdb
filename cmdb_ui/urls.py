@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from .views import *
 
-
 urlpatterns = [
     url(r'^$', index, name='index'),
     url(r'^login/$', login, name='login'),
@@ -12,6 +11,7 @@ urlpatterns = [
     url(r'^asset_edit_server/(?P<asset_id>[0-9]+)/$', asset_edit_server, name='asset_edit_server'),
     url(r'^asset_edit_networkdevice/(?P<asset_id>[0-9]+)/$', asset_edit_networkdevice, name='asset_edit_networkdevice'),
     url(r'^asset_detail/(?P<asset_id>[0-9]+)/$', asset_detail, name='asset_detail'),
+    url(r'^object_query/$', object_query, name='object_query'),
 
     url(r'^idc_list/(?P<page_num>[0-9]+)?/?$', idc_list, name='idc_list'),
     url(r'^idc_add/$', idc_add, name='idc_add'),
