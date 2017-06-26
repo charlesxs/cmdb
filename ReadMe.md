@@ -39,7 +39,7 @@ _机房_
 
 ![addserver](/../screenshots/screenshots/idc-001.png)
 
-![addserver](/../screenshots/screenshots/view-002.png)
+![view](/../screenshots/screenshots/view-001.png)
 
 
 _业务管理_
