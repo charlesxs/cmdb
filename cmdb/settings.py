@@ -137,3 +137,6 @@ SESSION_COOKIE_AGE = 86400
 
 STATIC_URL = '/static/'
 
+CMDB_VERSION = '0.1.0'
+
+

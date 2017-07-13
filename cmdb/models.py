@@ -60,7 +60,7 @@ class Server(models.Model):
     logical_cpu = models.CharField(max_length=100, help_text='逻辑CPU信息')
     logical_disk = models.CharField(max_length=50, help_text='磁盘容量')
     logical_memory = models.CharField(max_length=50, help_text='内存容量')
-    os = models.CharField(max_length=50, help_text='操作系统')
+    os = models.CharField(max_length=100, help_text='操作系统')
     asset = models.OneToOneField(Asset, on_delete=models.CASCADE)
     phost_ip = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True,
                                             help_text='如果资产是虚拟机,此处记录宿主机IP')

@@ -95,17 +95,17 @@ def asset_list(request, page_num):
         queryset = Asset.objects.all()
 
         if 'idc' in request.GET:
-            print('idc', request.GET['idc'])
+            # print('idc', request.GET['idc'])
             queryset = queryset.filter(idc__name=request.GET['idc'])
-            print(queryset)
+            # print(queryset)
         if 'asset_type' in request.GET:
-            print('asset_type', request.GET['asset_type'])
+            # print('asset_type', request.GET['asset_type'])
             queryset = queryset.filter(asset_type=request.GET['asset_type'])
         if 'business_line' in request.GET:
             queryset = queryset.filter(business_line__name=request.GET['business_line'])
         if 'contact' in request.GET:
             queryset = queryset.filter(contact__realname=request.GET['contact'])
-            print(queryset)
+            # print(queryset)
         if 'cabinet_number' in request.GET:
             queryset = queryset.filter(cabinet_number=int(request.GET['cabinet_number']))
 
@@ -216,7 +216,7 @@ def asset_edit_server(request, asset_id):
         return render(request, 'asset_edit_server.html', locals())
 
     if request.method == 'POST':
-        print(request.POST.get('asset_type'))
+        # print(request.POST.get('asset_type'))
         data, errors = clean_server_form_data(request, Asset)
         if errors is not None:
             hidden_success = 'hidden'

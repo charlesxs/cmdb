@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
-from .views import (AssetListCreate, AssetListAll, AssetDetail,
+from .views import (AssetListCreate, AssetListAll, AssetDetail, Search,
                     UserViewSet, IDCViewSet, BusinessLineViewSet)
 
 user_list = UserViewSet.as_view({
@@ -45,5 +45,6 @@ urlpatterns = [
     url(r'^asset/$', AssetListCreate.as_view(), name='asset_list_create'),
     url(r'^asset/_all/$', AssetListAll.as_view(), name='asset_list_all'),
     url(r'^asset/(?P<pk>[0-9]+)/$', AssetDetail.as_view(), name='asset_detail'),
+    url(r'^search/', Search.as_view(), name="search"),
     url(r'^', include(router.urls))
 ]

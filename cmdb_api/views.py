@@ -127,3 +127,24 @@ class BusinessLineViewSet(ModelViewSet):
     queryset = BusinessLine.objects.all()
     serializer_class = BusinessLineSerializer
 
+
+class Search(IdNameConvertMixin, APIView):
+    def get(self, request):
+        queryset = Asset.objects.all()
+        res = False
+
+        for k, v in request.GET.items():
+            if k == 'lan_ip':
+                queryset = queryset.filter(server__lan_ip=v)
+                res = True
+            elif k == 'wan_ip':
+                queryset = queryset.filter(server__wan_ip=v)
+                res = True
+            elif k == 'hostname':
+                queryset = queryset.filter(server__hostname=v)
+                res = True
+        if res and queryset:
+            serial = ServerAssetCreateUpdateSerializer(queryset.first())
+            return Response(self.id_to_name(serial.data, Asset), status=status.HTTP_200_OK)
+        return Response({'code': 404, 'detail': 'not found asset'}, status=status.HTTP_404_NOT_FOUND)
+
