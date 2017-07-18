@@ -537,8 +537,6 @@ def business_line_list(request, page_num):
                                 status=400)
         try:
             idlist = [int(i) for i in json.loads(ids)]
-            if 1 in idlist:
-                return JsonResponse({'code': 403, 'msg': '不能删除 管理员组'}, status=403)
             BusinessLine.objects.filter(id__in=idlist).delete()
         except Exception as e:
             return JsonResponse({'code': 500, 'msg': str(e)}, status=500)
