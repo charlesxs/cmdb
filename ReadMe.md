@@ -11,7 +11,19 @@
     
     3. pip install -r requirements.txt
     
-    4. python manage.py runserver 0.0.0.0:8000
+    4. mysql 创建 cmdb 数据库 和授权账户
+        
+        例子:
+        
+            mysql> create database default charset 'utf8';
+            
+            mysql> grant all on cmdb.* to cmdb@'127.0.0.1' identified by 'xxxxxxx';
+    
+    5. 修改 cmdb/settings.py ， 修改数据库的用户名和密码
+    
+    6. python manage.py makemigrations && python manage.py migrate
+    
+    7. python manage.py runserver 0.0.0.0:8000
     
     
 **使用**
