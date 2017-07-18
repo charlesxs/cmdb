@@ -40,8 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cmdb',
     'cmdb_api',
-    'cmdb_ui',
-    'bootstrapform'
+    'cmdb_ui'
 ]
 
 REST_FRAMEWORK = {
