@@ -167,7 +167,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 s = validated_data.pop('server')
                 if s.get('networkinterface'):
                     self.update_subset(instance, s.pop('networkinterface'), model=NetworkInterface,
-                                       serializer_class=NetworkInterfaceSerializer, identity='mac')
+                                       serializer_class=NetworkInterfaceSerializer, identity='name')
 
                 if s.get('memory'):
                     self.update_subset(instance, s.pop('memory'), model=Memory,
@@ -202,7 +202,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
             identitys.append(d[identity])
             try:
                 query_keyword = {identity: d[identity]}
-                q = queryset.filter(**query_keyword).first()
+                q = queryset.get(**query_keyword)
                 for k, v in d.items():
                     old_value = getattr(q, k)
                     if old_value != v:
