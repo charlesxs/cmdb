@@ -58,7 +58,7 @@
                         <th>内网IP:</th>
                         <td>{{ asset.server.lan_ip }}</td>
                         <th>外网IP:</th>
-                        <td>{{ asset.server.wan_ip }}</td>
+                        <td>{{ asset.server.wan_ip |default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <th>CPU:</th>

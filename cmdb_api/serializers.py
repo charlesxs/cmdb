@@ -162,7 +162,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         with transaction.atomic():
-            business_line = set()
+            business_line = ()
             if validated_data.get('server'):
                 s = validated_data.pop('server')
                 if s.get('networkinterface'):
@@ -171,7 +171,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
 
                 if s.get('memory'):
                     self.update_subset(instance, s.pop('memory'), model=Memory,
-                                       serializer_class=MemorySerializer, identity='serialnum')
+                                       serializer_class=MemorySerializer, identity='locator')
 
                 if s.get('disk'):
                     self.update_subset(instance, s.pop('disk'), model=Disk,
@@ -188,7 +188,8 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 update_current_instance(instance.server, s, instance, 'server')
 
             if validated_data.get('business_line'):
-                business_line.update(set(validated_data.pop('business_line')))
+                business_line = validated_data.pop('business_line')
+            instance.business_line.clear()
             instance.business_line.add(*business_line)
 
             update_current_instance(instance, validated_data, instance, 'asset')

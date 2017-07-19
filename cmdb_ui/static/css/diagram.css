@@ -10,17 +10,17 @@ td{
 }
 
 .blue {
-    background-color: #4a79ff;
+    background-color: #ffcc66;
     color: whitesmoke;
 }
 
 td>a, td>a:link, td>a:focus, td>a:visited, td>a:active {
     text-emphasis: none;
-    color: whitesmoke;
+    color: black;
 }
 
 td>a:hover{
     text-decoration: none;
-    color: whitesmoke;
+    color: black;
 }
 

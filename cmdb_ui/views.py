@@ -88,7 +88,7 @@ def asset_list(request, page_num):
 
     params, keyword = None, request.GET.get('keyword', None)
 
-    if len(request.GET) != 0 and keyword not in request.GET:
+    if len(request.GET) != 0 and 'keyword' not in request.GET:
         params = urlencode(request.GET)
 
     if params is not None:
@@ -114,7 +114,7 @@ def asset_list(request, page_num):
 
     elif keyword is not None:
         queryset = Asset.objects.filter(Q(server__hostname__contains=keyword) |
-                                        Q(server__lan_ip=keyword) |
+                                        Q(server__lan_ip__contains=keyword) |
                                         Q(networkdevice__name__contains=keyword))
         params = urlencode({'keyword': keyword})
         start, end, page_html = pages(queryset, page_num, '/asset_list',
