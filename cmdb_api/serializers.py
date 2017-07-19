@@ -205,7 +205,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 q = queryset.get(**query_keyword)
                 for k, v in d.items():
                     old_value = getattr(q, k)
-                    if old_value != v:
+                    if old_value != v and v is not None:
                         setattr(q, k, v)
                         History.objects.create(asset=instance, model=model.__name__, field=k,
                                                old=old_value, new=v, operate='u')
