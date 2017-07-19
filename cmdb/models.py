@@ -54,7 +54,7 @@ class Asset(models.Model):
 
 
 class Server(models.Model):
-    hostname = models.CharField(max_length=100, unique=True)
+    hostname = models.CharField(max_length=100)
     lan_ip = models.GenericIPAddressField(protocol='IPv4', db_index=True, unique=True)
     wan_ip = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True)
     logical_cpu = models.CharField(max_length=100, help_text='逻辑CPU信息')
