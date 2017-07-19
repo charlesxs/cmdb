@@ -202,7 +202,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
             identitys.append(d[identity])
             try:
                 query_keyword = {identity: d[identity]}
-                q = queryset.get(**query_keyword)
+                q = queryset.filter(**query_keyword).first()
                 for k, v in d.items():
                     old_value = getattr(q, k)
                     if old_value != v:
