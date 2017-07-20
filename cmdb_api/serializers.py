@@ -94,9 +94,9 @@ class NetworkDeviceSerializer(DynamicModelSerializer):
 def update_current_instance(current_instance, data, instance, model_name):
     for k, v in data.items():
         old_value = getattr(current_instance, k)
-        if old_value != v:
+        if old_value != v and v:
             setattr(current_instance, k, v)
-            History.objects.create(asset=instance, model=model_name, field=k,
+            History.objects.create(asset=instance, model=model_name, field=k.help_text,
                                    old=old_value, new=v, operate='u')
     current_instance.save()
 
@@ -188,6 +188,14 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
 
             if validated_data.get('business_line'):
                 business_line = validated_data.pop('business_line')
+
+                try:
+                    History.objects.create(asset=instance, model='BusinessLine', field='业务线',
+                                           old='、'.join(i.name for i in instance.business_line.all()),
+                                           new='、'.join(b.name for b in business_line))
+                except Exception as e:
+                    print('serializer.py: 197 ', e)
+
                 instance.business_line.clear()
                 instance.business_line.add(*business_line)
 
@@ -205,9 +213,9 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 q = queryset.get(**query_keyword)
                 for k, v in d.items():
                     old_value = getattr(q, k)
-                    if old_value != v and v is not None:
+                    if old_value != v and v:
                         setattr(q, k, v)
-                        History.objects.create(asset=instance, model=model.__name__, field=k,
+                        History.objects.create(asset=instance, model=model.__name__, field=k.help_text,
                                                old=old_value, new=v, operate='u')
                 q.save()
             except ObjectDoesNotExist:
