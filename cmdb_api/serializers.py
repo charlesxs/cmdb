@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist
+from .utils import is_empty
 from cmdb.models import (Asset, Server, NetworkDevice, History, BusinessLine,
                          User, IDC, NetworkInterface, CPU, Memory, Disk, HWSystem)
 
@@ -94,7 +95,7 @@ class NetworkDeviceSerializer(DynamicModelSerializer):
 def update_current_instance(current_instance, data, instance, model):
     for k, v in data.items():
         old_value = getattr(current_instance, k)
-        if old_value != v and v:
+        if old_value != v and not is_empty(v):
             setattr(current_instance, k, v)
             History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                    old=old_value, new=v, operate='u')
@@ -191,7 +192,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 old = '、'.join(i.name for i in instance.business_line.all())
                 new = '、'.join(b.name for b in business_line)
 
-                if old != new:
+                if old != new and not is_empty(business_line):
                     History.objects.create(asset=instance, model='BusinessLine', field='业务线',
                                            old=old, new=new)
                     instance.business_line.clear()
@@ -211,7 +212,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 q = queryset.get(**query_keyword)
                 for k, v in d.items():
                     old_value = getattr(q, k)
-                    if old_value != v and v:
+                    if old_value != v and not is_empty(v):
                         setattr(q, k, v)
                         History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                                old=old_value, new=v, operate='u')

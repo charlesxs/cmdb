@@ -34,4 +34,13 @@ def encrypt_pwd(pwd):
     return sha256(pwd.encode('utf-8')).hexdigest()
 
 
+def is_empty(v):
+    if isinstance(v, int):
+        return False
+
+    if isinstance(v, (list, dict, tuple, str, set)) and len(v) == 0:
+        return True
+
+    return v is None
+
 
