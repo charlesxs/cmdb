@@ -124,7 +124,6 @@ def clean_server_form_data(request, model):
         data['server']['disk'] = cache.get_disk()
     except (ValueError, TypeError) as e:
         return data, str(e)
-    print(data)
     return data, None
 
 
