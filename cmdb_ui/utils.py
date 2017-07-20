@@ -33,11 +33,11 @@ def get_username(id_):
 class CacheServerData:
     # 设置每个资源的唯一标识 ，后面判断如果唯一标识是None, 则删除这条记录.
     IdentityMap = {
-        'memory': 'serialnum',
+        'memory': 'locator',
         'disk': 'locator',
         'cpu': 'socket',
         'hw_system': 'serialnum',
-        'networkinterface': 'mac'
+        'networkinterface': 'name'
     }
 
     def __init__(self):
@@ -124,6 +124,7 @@ def clean_server_form_data(request, model):
         data['server']['disk'] = cache.get_disk()
     except (ValueError, TypeError) as e:
         return data, str(e)
+    print(data)
     return data, None
 
 
