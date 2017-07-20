@@ -33,3 +33,8 @@ def fetch_integer_field(model):
 def encrypt_pwd(pwd):
     return sha256(pwd.encode('utf-8')).hexdigest()
 
+
+def get_help_text(model, field_name):
+    return {f.name: f.help_text for f in model._meta.fields}
+
+

@@ -91,12 +91,12 @@ class NetworkDeviceSerializer(DynamicModelSerializer):
         exclude = ('id', 'asset')
 
 
-def update_current_instance(current_instance, data, instance, model_name):
+def update_current_instance(current_instance, data, instance, model):
     for k, v in data.items():
         old_value = getattr(current_instance, k)
         if old_value != v and v:
             setattr(current_instance, k, v)
-            History.objects.create(asset=instance, model=model_name, field=k.help_text,
+            History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                    old=old_value, new=v, operate='u')
     current_instance.save()
 
@@ -184,7 +184,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                                        serializer_class=HWSystemSerializer, identity='serialnum')
 
                 # update server
-                update_current_instance(instance.server, s, instance, 'server')
+                update_current_instance(instance.server, s, instance, Server)
 
             if validated_data.get('business_line'):
                 business_line = validated_data.pop('business_line')
@@ -199,7 +199,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 instance.business_line.clear()
                 instance.business_line.add(*business_line)
 
-            update_current_instance(instance, validated_data, instance, 'asset')
+            update_current_instance(instance, validated_data, instance, Asset)
         return instance
 
     @staticmethod
@@ -215,7 +215,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                     old_value = getattr(q, k)
                     if old_value != v and v:
                         setattr(q, k, v)
-                        History.objects.create(asset=instance, model=model.__name__, field=k.help_text,
+                        History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                                old=old_value, new=v, operate='u')
                 q.save()
             except ObjectDoesNotExist:
@@ -262,11 +262,11 @@ class NetDeviceAssetCreateUpdateSerializer(DynamicModelSerializer):
             business_line = set()
             if validated_data.get('networkdevice'):
                 n = validated_data.pop('networkdevice')
-                update_current_instance(instance.networkdevice, n, instance, 'networkdevice')
+                update_current_instance(instance.networkdevice, n, instance, NetworkDevice)
             if validated_data.get('business_line'):
                 business_line.update(set(validated_data.pop('business_line')))
             instance.business_line.add(*business_line)
-            update_current_instance(instance, validated_data, instance, 'asset')
+            update_current_instance(instance, validated_data, instance, Asset)
         return instance
 
 

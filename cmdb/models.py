@@ -9,6 +9,17 @@ class IDC(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field in self._meta.fields:
+    #         setattr(self, '{0}_help_text'.format(field.name), field.help_text)
+
 
 class BusinessLine(models.Model):
     name = models.CharField(max_length=100, unique=True, help_text='业务线')
@@ -16,6 +27,12 @@ class BusinessLine(models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class User(models.Model):
@@ -28,6 +45,12 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class Asset(models.Model):
@@ -52,21 +75,33 @@ class Asset(models.Model):
     def __str__(self):
         return self.serialnum
 
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
+
 
 class Server(models.Model):
     hostname = models.CharField(max_length=100, help_text='主机名')
     lan_ip = models.GenericIPAddressField(protocol='IPv4', db_index=True, unique=True, help_text='内网IP')
     wan_ip = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True, help_text='外网IP')
-    logical_cpu = models.CharField(max_length=100, help_text='逻辑CPU信息')
+    logical_cpu = models.CharField(max_length=100, help_text='CPU信息')
     logical_disk = models.CharField(max_length=50, help_text='磁盘容量')
     logical_memory = models.CharField(max_length=50, help_text='内存容量')
     os = models.CharField(max_length=100, help_text='操作系统')
     asset = models.OneToOneField(Asset, on_delete=models.CASCADE)
     phost_ip = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True,
-                                            help_text='如果资产是虚拟机,此处记录宿主机IP')
+                                            help_text='宿主机IP')
 
     def __str__(self):
         return self.hostname
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class NetworkDevice(models.Model):
@@ -79,6 +114,12 @@ class NetworkDevice(models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class NetworkInterface(models.Model):
@@ -95,6 +136,12 @@ class NetworkInterface(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
+
 
 class Memory(models.Model):
     serialnum = models.CharField(max_length=100, null=True, blank=True, help_text='序列号')
@@ -107,6 +154,12 @@ class Memory(models.Model):
 
     def __str__(self):
         return self.size
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class CPU(models.Model):
@@ -122,6 +175,12 @@ class CPU(models.Model):
     def __str__(self):
         return self.family
 
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
+
 
 class Disk(models.Model):
     size = models.CharField(max_length=50, help_text='磁盘大小')
@@ -135,6 +194,12 @@ class Disk(models.Model):
     def __str__(self):
         return self.size
 
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
+
 
 class HWSystem(models.Model):
     serialnum = models.CharField(max_length=100, help_text='序列号')
@@ -145,6 +210,12 @@ class HWSystem(models.Model):
 
     def __str__(self):
         return self.product_name
+
+    @classmethod
+    def get_help_text(cls, field_name):
+        for field in cls._meta.fields:
+            if field.name == field_name:
+                return field.help_text
 
 
 class History(models.Model):

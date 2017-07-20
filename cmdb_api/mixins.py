@@ -82,4 +82,3 @@ class AssetListMixin(IdNameConvertMixin):
                 serials.append(NetDeviceAssetCreateUpdateSerializer(instance=asset).data)
         return Response([self.id_to_name(data, Asset) for data in serials])
 
-
