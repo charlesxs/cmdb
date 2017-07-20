@@ -188,16 +188,14 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
 
             if validated_data.get('business_line'):
                 business_line = validated_data.pop('business_line')
+                old = '、'.join(i.name for i in instance.business_line.all())
+                new = '、'.join(b.name for b in business_line)
 
-                try:
+                if old != new:
                     History.objects.create(asset=instance, model='BusinessLine', field='业务线',
-                                           old='、'.join(i.name for i in instance.business_line.all()),
-                                           new='、'.join(b.name for b in business_line))
-                except Exception as e:
-                    print('serializer.py: 197 ', e)
-
-                instance.business_line.clear()
-                instance.business_line.add(*business_line)
+                                           old=old, new=new)
+                    instance.business_line.clear()
+                    instance.business_line.add(*business_line)
 
             update_current_instance(instance, validated_data, instance, Asset)
         return instance
