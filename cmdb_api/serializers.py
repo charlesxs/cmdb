@@ -164,30 +164,29 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
         with transaction.atomic():
             if validated_data.get('server'):
                 s = validated_data.pop('server')
-                keys = s.keys()
-                if 'networkinterface' in keys:
+                if 'networkinterface' in s:
                     self.update_subset(instance, s.pop('networkinterface'), model=NetworkInterface,
                                        serializer_class=NetworkInterfaceSerializer, identity='name')
 
-                if 'memory' in keys:
+                if 'memory' in s:
                     self.update_subset(instance, s.pop('memory'), model=Memory,
                                        serializer_class=MemorySerializer, identity='locator')
 
-                if 'disk' in keys:
+                if 'disk' in s:
                     self.update_subset(instance, s.pop('disk'), model=Disk,
                                        serializer_class=DiskSerializer, identity='locator')
-                if 'cpu' in keys:
+                if 'cpu' in s:
                     self.update_subset(instance, s.pop('cpu'), model=CPU,
                                        serializer_class=CPUSerializer, identity='socket')
 
-                if 'hw_system' in keys:
+                if 'hw_system' in s:
                     self.update_subset(instance, s.pop('hw_system'), model=HWSystem,
                                        serializer_class=HWSystemSerializer, identity='serialnum')
 
                 # update server
                 update_current_instance(instance.server, s, instance, Server)
 
-            if validated_data.get('business_line'):
+            if 'business_line' in validated_data:
                 business_line = validated_data.pop('business_line')
                 old = '、'.join(i.name for i in instance.business_line.all())
                 new = '、'.join(b.name for b in business_line)
