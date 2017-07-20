@@ -14,6 +14,7 @@ class IDC(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -33,6 +34,7 @@ class BusinessLine(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class User(models.Model):
@@ -51,6 +53,7 @@ class User(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class Asset(models.Model):
@@ -80,6 +83,7 @@ class Asset(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class Server(models.Model):
@@ -102,6 +106,7 @@ class Server(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class NetworkDevice(models.Model):
@@ -120,6 +125,7 @@ class NetworkDevice(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class NetworkInterface(models.Model):
@@ -128,9 +134,9 @@ class NetworkInterface(models.Model):
         (1, 'enable')
     )
     name = models.CharField(max_length=30, help_text='网卡名')
-    mac = models.CharField(max_length=50, help_text='MAC 地址')
+    mac = models.CharField(max_length=50, help_text='MAC地址')
     ip = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True, help_text='ip地址')
-    state = models.SmallIntegerField(db_index=True, choices=STATE_CHOICE, default=0, help_text='状态')
+    state = models.SmallIntegerField(db_index=True, choices=STATE_CHOICE, default=0, help_text='网卡状态')
     server = models.ForeignKey(Server, on_delete=models.CASCADE, related_name='networkinterface')
 
     def __str__(self):
@@ -141,12 +147,13 @@ class NetworkInterface(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class Memory(models.Model):
-    serialnum = models.CharField(max_length=100, null=True, blank=True, help_text='序列号')
+    serialnum = models.CharField(max_length=100, null=True, blank=True, help_text='内存序列号')
     part_number = models.CharField(max_length=100, null=True, blank=True, help_text='内存条物理号码')
-    speed = models.CharField(max_length=50, help_text='速率')
+    speed = models.CharField(max_length=50, help_text='内存速率')
     manufacturer = models.CharField(max_length=100, help_text='生产厂商', null=True, blank=True)
     locator = models.CharField(max_length=20, help_text='安装位置')
     size = models.CharField(max_length=20, help_text='内存大小')
@@ -160,6 +167,7 @@ class Memory(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class CPU(models.Model):
@@ -180,6 +188,7 @@ class CPU(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class Disk(models.Model):
@@ -199,6 +208,7 @@ class Disk(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class HWSystem(models.Model):
@@ -216,6 +226,7 @@ class HWSystem(models.Model):
         for field in cls._meta.fields:
             if field.name == field_name:
                 return field.help_text
+        return field_name
 
 
 class History(models.Model):
@@ -229,7 +240,7 @@ class History(models.Model):
     model = models.CharField(max_length=50)
     field = models.CharField(max_length=50)
     old = models.CharField(max_length=200, null=True, blank=True)
-    new = models.CharField(max_length=200)
+    new = models.CharField(max_length=200, null=True, blank=True)
     operate = models.CharField(max_length=6, choices=OP_CHOICE)
 
     def __str__(self):

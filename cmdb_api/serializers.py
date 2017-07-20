@@ -6,7 +6,6 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist
-from .utils import is_empty
 from cmdb.models import (Asset, Server, NetworkDevice, History, BusinessLine,
                          User, IDC, NetworkInterface, CPU, Memory, Disk, HWSystem)
 
@@ -95,7 +94,7 @@ class NetworkDeviceSerializer(DynamicModelSerializer):
 def update_current_instance(current_instance, data, instance, model):
     for k, v in data.items():
         old_value = getattr(current_instance, k)
-        if old_value != v and not is_empty(v):
+        if old_value != v:
             setattr(current_instance, k, v)
             History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                    old=old_value, new=v, operate='u')
@@ -165,22 +164,23 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
         with transaction.atomic():
             if validated_data.get('server'):
                 s = validated_data.pop('server')
-                if s.get('networkinterface'):
+                keys = s.keys()
+                if 'networkinterface' in keys:
                     self.update_subset(instance, s.pop('networkinterface'), model=NetworkInterface,
                                        serializer_class=NetworkInterfaceSerializer, identity='name')
 
-                if s.get('memory'):
+                if 'memory' in keys:
                     self.update_subset(instance, s.pop('memory'), model=Memory,
                                        serializer_class=MemorySerializer, identity='locator')
 
-                if s.get('disk'):
+                if 'disk' in keys:
                     self.update_subset(instance, s.pop('disk'), model=Disk,
                                        serializer_class=DiskSerializer, identity='locator')
-                if s.get('cpu'):
+                if 'cpu' in keys:
                     self.update_subset(instance, s.pop('cpu'), model=CPU,
                                        serializer_class=CPUSerializer, identity='socket')
 
-                if s.get('hw_system'):
+                if 'hw_system' in keys:
                     self.update_subset(instance, s.pop('hw_system'), model=HWSystem,
                                        serializer_class=HWSystemSerializer, identity='serialnum')
 
@@ -192,7 +192,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 old = '、'.join(i.name for i in instance.business_line.all())
                 new = '、'.join(b.name for b in business_line)
 
-                if old != new and not is_empty(business_line):
+                if old != new:
                     History.objects.create(asset=instance, model='BusinessLine', field='业务线',
                                            old=old, new=new)
                     instance.business_line.clear()
@@ -212,7 +212,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 q = queryset.get(**query_keyword)
                 for k, v in d.items():
                     old_value = getattr(q, k)
-                    if old_value != v and not is_empty(v):
+                    if old_value != v:
                         setattr(q, k, v)
                         History.objects.create(asset=instance, model=model.__name__, field=model.get_help_text(k),
                                                old=old_value, new=v, operate='u')
@@ -223,7 +223,7 @@ class ServerAssetCreateUpdateSerializer(DynamicModelSerializer):
                 d['server'] = instance.server
                 model.objects.create(**d)
 
-        # delete
+        # check and delete
         for q in queryset:
             if getattr(q, identity) not in identitys:
                 serial = serializer_class(q)
