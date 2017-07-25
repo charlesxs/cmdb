@@ -554,7 +554,7 @@ def business_line_list(request, page_num):
                                       page_total_item_num, keyword=keyword)
     else:
         queryset = BusinessLine.objects.all()
-        start, end, page_html = pages(queryset, page_num, '/business_list_line',
+        start, end, page_html = pages(queryset, page_num, '/business_line_list',
                                       page_total_item_num)
 
     business_line = queryset[start:end]
