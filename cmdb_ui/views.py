@@ -550,7 +550,7 @@ def business_line_list(request, page_num):
 
     if keyword is not None:
         queryset = BusinessLine.objects.filter(name__contains=keyword)
-        start, end, page_html = pages(queryset, page_num, '/business_list_line',
+        start, end, page_html = pages(queryset, page_num, '/business_line_list',
                                       page_total_item_num, keyword=keyword)
     else:
         queryset = BusinessLine.objects.all()
