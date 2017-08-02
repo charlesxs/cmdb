@@ -1,7 +1,8 @@
 # coding = utf-8
-from django.http import Http404
+# from django.http import Http404
 from copy import deepcopy
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from .utils import get_models_field_name, fetch_related_field, fetch_integer_field
 from .serializers import ServerAssetCreateUpdateSerializer, NetDeviceAssetCreateUpdateSerializer
@@ -14,14 +15,14 @@ class IdNameConvertMixin:
         name = get_models_field_name(model)
         ret = model.objects.filter(**{name: value}).first()
         if not ret:
-            raise Http404(value + 'not found')
+            raise NotFound('{0} not found'.format(value))
         return ret
 
     @staticmethod
     def search_by_id(model, id_):
         ret = model.objects.filter(id=id_).first()
         if not ret:
-            raise Http404
+            raise NotFound('{0} in {1} not found'.format(id_, model))
         return ret
 
     def name_to_id(self, dictdata, model):
