@@ -23,7 +23,13 @@
     
     6. python manage.py makemigrations && python manage.py migrate
     
-    7. python manage.py runserver 0.0.0.0:8000
+    7. 导入初始化数据 （内部包含有一点点测试数据）
+    
+        mysql -uroot cmdb < sql/cmdb.sql
+        
+        初始化 用户: admin 密码: admin
+    
+    8. python manage.py runserver 0.0.0.0:8000
     
     
 **使用**

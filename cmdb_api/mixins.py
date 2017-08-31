@@ -15,14 +15,14 @@ class IdNameConvertMixin:
         name = get_models_field_name(model)
         ret = model.objects.filter(**{name: value}).first()
         if not ret:
-            raise NotFound('{0} not found'.format(value))
+            raise NotFound('{0} in {1} not found'.format(value, model.__name__))
         return ret
 
     @staticmethod
     def search_by_id(model, id_):
         ret = model.objects.filter(id=id_).first()
         if not ret:
-            raise NotFound('{0} in {1} not found'.format(id_, model))
+            raise NotFound('{0} in {1} not found'.format(id_, model.__name__))
         return ret
 
     def name_to_id(self, dictdata, model):
